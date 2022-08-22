@@ -1,5 +1,8 @@
 package com.handstandsam.kmpreadiness.internal.models
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 internal data class Gav(val group: String, val artifact: String, val version: String?) {
     val id: String = buildString {
         append("$group:$artifact")

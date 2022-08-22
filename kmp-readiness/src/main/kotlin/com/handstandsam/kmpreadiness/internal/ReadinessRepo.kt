@@ -53,18 +53,6 @@ internal class ReadinessRepo(tempDir: File) {
         }
     }
 
-    fun debugPrint() {
-        println("Ready: ")
-        readyCache.forEach {
-            println("* ${it.id}")
-        }
-
-        println("Not Ready: ")
-        notReadyCache.forEach {
-            println("* ${it.id}")
-        }
-    }
-
     fun hasBeenChecked(gav: Gav): Boolean {
         return readyCache.any { it == gav } || notReadyCache.any { it == gav }
     }

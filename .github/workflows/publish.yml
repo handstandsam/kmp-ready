@@ -1,0 +1,93 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Gradle Wrapper Validation
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Generate cache key
+        run: .github/scripts/checksum.sh checksum.txt
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('checksum.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle
+
+      - name: Install JDK 11
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: 11
+
+      - name: Test Plugin
+        run: ./gradlew check :kmp-readiness:apiCheck --stacktrace --scan
+
+  perf-control:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Gradle Wrapper Validation
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Install JDK 11
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: 11
+
+      - name: Performance Tests - Warm Up
+        run: ./gradlew check --rerun-tasks --stacktrace --scan
+
+      - name: Performance Tests - jvm
+        run: ./gradlew :samples:jvm:assemble -Pperftest=:samples:jvm --rerun-tasks --stacktrace --scan
+
+      - name: Performance Tests - multiplatform
+        run: ./gradlew :samples:multiplatform:assemble -Pperftest=:samples:multiplatform --rerun-tasks --stacktrace --scan
+
+
+  publish:
+    runs-on: ubuntu-latest
+    if: github.repository == 'handstandsam/kmp-readiness' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: [build]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install JDK 11
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: 11
+
+      - name: Upload Snapshot
+        run: ./gradlew -p kmp-readiness clean publish --no-daemon --no-parallel --no-configuration-cache --stacktrace
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
+
+      - name: Retrieve Version
+        run: echo "VERSION_NAME=$(./gradlew -q -p kmp-readiness printVersionName)" >> $GITHUB_ENV
+
+      - name: Publish release (main only)
+        run: ./gradlew -p kmp-readiness closeAndReleaseRepository --no-daemon --no-parallel
+        if: success() && !endsWith(env.VERSION_NAME, '-SNAPSHOT')
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_PASSWORD }}

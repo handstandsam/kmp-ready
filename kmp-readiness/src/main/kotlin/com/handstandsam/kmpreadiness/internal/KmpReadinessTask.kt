@@ -2,16 +2,17 @@ package com.handstandsam.kmpreadiness.internal
 
 import com.handstandsam.kmpreadiness.internal.Tasks.declareCompatibilities
 import com.handstandsam.kmpreadiness.internal.models.Gav
+import com.handstandsam.kmpreadiness.internal.models.ReadinessResult
 import com.jakewharton.picnic.table
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
+import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.TaskAction
 import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
 import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper
-import java.io.File
 
-public abstract class KmpReadinessTask : DefaultTask() {
+internal abstract class KmpReadinessTask : DefaultTask() {
 
     public companion object {
         public const val TASK_NAME: String = "kmpReadiness"
@@ -22,156 +23,93 @@ public abstract class KmpReadinessTask : DefaultTask() {
         this.declareCompatibilities() // Does not support configuration cache
     }
 
-    internal sealed class ReadinessResult {
+    private fun Project.toReadinessData(gavsToProcess: List<Gav>): ReadinessData {
 
-        internal sealed class Ready : ReadinessResult() {
-            object AlreadyEnabled : Ready()
-            object Compatible : Ready()
+        // println("Plugins for ${target.path}")
+        val appliedPlugins = plugins.map { it::class.java.name }
+        // target.plugins.forEach {
+        //     println("* ${it::class.java.name}")
+        // }
+
+        val appliedGradlePlugins = AppliedGradlePlugins(
+            java = plugins.any { it::class.java == org.gradle.api.plugins.JavaPlugin::class.java },
+            multiplatform = plugins.any { it::class.java == KotlinMultiplatformPluginWrapper::class.java },
+            kotlin = plugins.any { it::class.java == KotlinPluginWrapper::class.java }
+        )
+
+        val sourceSetSearcher = SourceSetSearcher()
+        val sourceSetSearcherResult = sourceSetSearcher.searchSourceSets(project)
+        val tempDir = FileUtil.projectDirOutputFile(project)
+        val kmpDependenciesAnalysisResult = runBlocking {
+            DependenciesReadinessProcessor(tempDir).process(gavsToProcess)
         }
 
-        data class NotReady(val reason: String) : ReadinessResult()
-    }
-
-    private data class ReadinessData(
-        val projectName: String,
-        val hasKotlinMultiplatformPlugin: Boolean,
-        val hasJavaPlugin: Boolean,
-        val hasKotlinWrapperPlugin: Boolean,
-        val hasOnlyKotlinFiles: Boolean,
-        val hasOnlyMultiplatformCompatibleDependencies: Boolean,
-    ) {
-
-        fun computeReadiness(): ReadinessResult {
-            return if (hasKotlinMultiplatformPlugin) {
-                ReadinessResult.Ready.AlreadyEnabled
-            } else if (hasKotlinWrapperPlugin) {
-                if (hasOnlyKotlinFiles) {
-                    if (hasOnlyMultiplatformCompatibleDependencies) {
-                        ReadinessResult.Ready.Compatible
-                    } else {
-                        ReadinessResult.NotReady("Incompatible Dependencies")
-                    }
-                } else {
-                    ReadinessResult.NotReady("Contains Java Files")
-                }
-            } else {
-                ReadinessResult.NotReady("Does Not Have the Kotlin JVM or Multiplatform Plugin")
-            }
-        }
-    }
-
-    internal fun projectDirOutputFile(
-        project: Project,
-    ): File {
-        return project.layout
-            .buildDirectory
-            .get()
-            .dir("tmp/kmp-readiness")
-            .asFile
-            .apply {
-                if (!exists()) {
-                    // Create the parent directory if it does not exist
-                    mkdirs()
-                }
-
-            }
-    }
-
-    private fun Project.toReadinessData(gavsToProcess: List<Gav>): ReadinessData = runBlocking {
-        val target = this
-        val tempDir = projectDirOutputFile(project)
-        DependenciesReadinessProcessor(tempDir).process(gavsToProcess)
-
-        val javaPlugin = plugins.any { it::class.java == org.gradle.api.plugins.JavaPlugin::class.java }
-        val multiplatformPlugin = plugins.any { it::class.java == KotlinMultiplatformPluginWrapper::class.java }
-        val kotlinPluginWrapper = plugins.any { it::class.java == KotlinPluginWrapper::class.java }
-        ReadinessData(
+        return ReadinessData(
             projectName = path,
-            hasKotlinMultiplatformPlugin = multiplatformPlugin,
-            hasJavaPlugin = javaPlugin,
-            hasKotlinWrapperPlugin = kotlinPluginWrapper,
-            hasOnlyKotlinFiles = true, // TODO, compute this
-            hasOnlyMultiplatformCompatibleDependencies = true // TODO, compute this
+            dependencyAnalysisResult = kmpDependenciesAnalysisResult,
+            gradlePlugins = appliedGradlePlugins,
+            sourceSetSearcherResult = sourceSetSearcherResult
         )
     }
 
     private fun getGavsForProject(target: Project): List<Gav> {
         val gavsToProcess = mutableListOf<Gav>()
-        target.configurations.filter { it.name == "runtimeClasspath" }.forEach { configuration ->
-            println("* Configuration: ${configuration.name}")
-            configuration.incoming.dependencies.forEach { incomingDependency ->
-                println("** Artifact: ${incomingDependency.name} ${incomingDependency::class.java}")
-                when (incomingDependency) {
-                    is org.gradle.api.artifacts.ProjectDependency -> {
-                    }
+        target.configurations.filter { it.name == JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME }
+            .forEach { configuration ->
+                println("* Configuration: ${configuration.name}")
+                configuration.incoming.dependencies.forEach { incomingDependency ->
+                    println("** Artifact: ${incomingDependency.name} ${incomingDependency::class.java}")
+                    when (incomingDependency) {
+                        is org.gradle.api.artifacts.ProjectDependency -> {
+                        }
 
-                    is org.gradle.api.artifacts.ExternalDependency -> {
-                        gavsToProcess.add(
-                            Gav(
-                                group = incomingDependency.group!!,
-                                artifact = incomingDependency.name,
-                                version = incomingDependency.version
+                        is org.gradle.api.artifacts.ExternalDependency -> {
+                            gavsToProcess.add(
+                                Gav(
+                                    group = incomingDependency.group!!,
+                                    artifact = incomingDependency.name,
+                                    version = incomingDependency.version
+                                )
                             )
-                        )
+                        }
+
+                        else -> {}
                     }
 
-                    else -> {}
                 }
-
             }
-        }
         println("depsToProcess $gavsToProcess")
         return gavsToProcess
     }
 
     private fun executeForProject(target: Project): ReadinessResult = runBlocking {
-
-        println("Project: ${target.name}")
-
-        // println("Plugins for ${target.path}")
-        // target.plugins.forEach {
-        //     println("* ${it::class.java.name}")
-        // }
-
         val gavsToProcess = getGavsForProject(target)
-
         val readinessData = target.toReadinessData(gavsToProcess)
-        println(" readinessData: ${readinessData}")
-
         val readinessResult = readinessData.computeReadiness()
-
-        println(" readinessResult: $readinessResult")
-        when (readinessResult) {
-            is ReadinessResult.Ready -> {
-                println(" && READY")
-            }
-
-            is ReadinessResult.NotReady -> {
-                println(" && NOT READY: ${readinessData::class.java.isAssignableFrom(ReadinessResult.Ready::class.java)}")
-            }
-        }
-
-        // val deps = DependencyVisitor.traverseDependenciesForConfiguration(configuration)
-        // println("Deps: $deps")
         readinessResult
     }
 
     @Suppress("NestedBlockDepth")
     @TaskAction
     internal fun execute() {
-
-        val results = mutableMapOf<Project, ReadinessResult>()
+        val results = mutableMapOf<String, ReadinessResult>()
 
         // val runOnSubprojects = project.isRootProject()
         val runOnSubprojects = true
 
         if (runOnSubprojects) {
-            project.rootProject.subprojects.forEach { target ->
-                results[target] = executeForProject(target)
-            }
+            project.rootProject.subprojects
+                .filter { subproject ->
+                    // Only if we have a classpath ending in "runtimeClasspath"
+                    subproject.configurations.any { it.name.toLowerCase().endsWith("runtimeclasspath") }
+                }
+                .forEach { target ->
+                    results[target.path] = executeForProject(target)
+                }
         } else {
-            results[project] = executeForProject(project)
+            results[project.path] = executeForProject(project)
         }
+
         val table = table {
             cellStyle {
                 border = true
@@ -182,22 +120,21 @@ public abstract class KmpReadinessTask : DefaultTask() {
             header {
                 row("Module Path", "KMP Readiness Result")
             }
-            // body {
-            //     row {
-            //         cell("Hello") {
-            //             rowSpan = 2
-            //         }
-            //         cell("World")
-            //     }
-            // }
             body {
-                results.filter { it.value is ReadinessResult.Ready }.forEach {
-                    row(it.key.path, it.value::class.java.simpleName)
+                results.forEach {
+                    val value = it.value
+                    if (value is ReadinessResult.Ready) {
+                        row(it.key, it.value::class.java.simpleName + "\n" + value.readinessData)
+                    }
                 }
-                results.filter { it.value is ReadinessResult.NotReady }.forEach {
-                    row(it.key.path, it.value::class.java.simpleName)
+                results.forEach {
+                    val value = it.value
+                    if (value is ReadinessResult.NotReady) {
+                        row(it.key, it.value::class.java.simpleName + "\n" + value.readinessData)
+                    }
                 }
             }
+
         }
 
         println("table \n$table")

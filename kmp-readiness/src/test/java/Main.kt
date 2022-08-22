@@ -1,12 +1,9 @@
-package com.handstandsam.kmpreadiness.internal
-
+import com.handstandsam.kmpreadiness.internal.DependenciesReadinessProcessor
 import com.handstandsam.kmpreadiness.internal.models.Gav
 import kotlinx.coroutines.runBlocking
 import java.io.File
 
-
-
-public fun main(): Unit = runBlocking {
+internal fun main(): Unit = runBlocking {
 
     val depsToProcess: List<Gav> = """
         androidx.databinding:databinding-common:7.2.0
@@ -179,4 +176,3 @@ public fun main(): Unit = runBlocking {
     processor.process(depsToProcess)
 }
 
-internal data class KmpReadyResult(val gav: Gav, val isReady: Boolean)

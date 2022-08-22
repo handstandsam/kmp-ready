@@ -1,6 +1,7 @@
 package com.handstandsam.kmpreadiness.internal
 
 import com.handstandsam.kmpreadiness.internal.models.Gav
+import com.handstandsam.kmpreadiness.internal.models.KmpDependenciesAnalysisResult
 import java.io.File
 
 internal class DependenciesReadinessProcessor(private val tempDir: File) {
@@ -26,19 +27,30 @@ internal class DependenciesReadinessProcessor(private val tempDir: File) {
         return excludedArtifacts.any { it.group == gav.group && it.artifact == gav.artifact }
     }
 
-    suspend fun process(depsToProcess: List<Gav>) {
+    suspend fun process(depsToProcess: List<Gav>): KmpDependenciesAnalysisResult {
         val readinessRepo = ReadinessRepo(tempDir)
+        val compatible = mutableListOf<Gav>()
+        val incompatible = mutableListOf<Gav>()
         depsToProcess.forEach { gav ->
             if (isExcluded(gav)) {
-                readinessRepo.add(kmpReadyResult = KmpReadyResult(gav, true))
+                readinessRepo.add(KmpReadyResult(gav, true))
+                compatible.add(gav)
             } else {
                 if (!readinessRepo.hasBeenChecked(gav)) {
                     val kmpReadyResult = MavenSearchRemote().searchFor(gav)
                     readinessRepo.add(kmpReadyResult)
+                    if (kmpReadyResult.isReady) {
+                        compatible.add(gav)
+                    } else {
+                        incompatible.add(gav)
+                    }
                 }
             }
-            readinessRepo.debugPrint()
             readinessRepo.write()
         }
+        return KmpDependenciesAnalysisResult(
+            compatible = compatible.map { it.id },
+            incompatible = incompatible.map { it.id }
+        )
     }
 }
