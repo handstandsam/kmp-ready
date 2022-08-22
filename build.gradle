@@ -1,0 +1,47 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        google()
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath("com.handstandsam.kmp4free:kmp4free:0.1.0")
+        classpath("com.handstandsam.kmp-readiness:kmp-readiness")
+        classpath(libs.android.gradle.plugin)
+    }
+}
+
+plugins {
+    alias(libs.plugins.dependency.guard)
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+        maven { url = "https://s01.oss.sonatype.org/content/repositories/snapshots/" }
+    }
+}
+
+dependencyGuard {
+    configuration("classpath") {
+        baselineMap = {
+            def str = it
+            if (str.startsWith("com.handstandsam.kmp-readiness:kmp-readiness")) {
+                null
+            } else {
+                str
+            }
+        }
+    }
+}
+
+// Allow Gradle Build Scans
+gradleEnterprise {
+    buildScan {
+        termsOfServiceUrl = "https://gradle.com/terms-of-service"
+        termsOfServiceAgree = "yes"
+        uploadInBackground = false // With this enabled, we don't get the 2nd buildscan in Github Actions
+    }
+}

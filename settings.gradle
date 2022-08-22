@@ -1,0 +1,28 @@
+pluginManagement {
+    repositories {
+        mavenCentral()
+        google()
+        gradlePluginPortal()
+        maven { url = "https://s01.oss.sonatype.org/content/repositories/snapshots/" }
+    }
+}
+
+plugins {
+    id "com.gradle.enterprise" version "3.10"
+}
+
+rootProject.name = "kmp-readiness-root"
+
+
+include ':samples:android_app'
+include ':samples:android_lib'
+include ':samples:jvm'
+include ':samples:jvm_kmp4free'
+include ':samples:multiplatform'
+include ':samples:multiplatform_kmp4free'
+// Use Source
+includeBuild('kmp-readiness') {
+    dependencySubstitution {
+        substitute module('com.handstandsam.kmp-readiness:kmp-readiness') using project(':')
+    }
+}
