@@ -16,17 +16,17 @@ internal data class AppliedGradlePlugins(
 @Serializable
 internal data class ReadinessData(
     val projectName: String,
-    val dependencyAnalysisResult: KmpDependenciesAnalysisResult,
+    val dependencyAnalysis: KmpDependenciesAnalysisResult,
     val gradlePlugins: AppliedGradlePlugins,
-    val sourceSetSearcherResult: SourceSetSearcherResult,
+    val sourceSets: SourceSetSearcherResult,
 ) {
 
     fun computeReadiness(): ReadinessResult {
         return if (gradlePlugins.multiplatform) {
             ReadinessResult.Ready(readyReason = ReadyReason.AlreadyEnabled, this)
         } else if (gradlePlugins.kotlin) {
-            if (sourceSetSearcherResult.hasOnlyKotlinFiles) {
-                if (dependencyAnalysisResult.hasOnlyMultiplatformCompatibleDependencies) {
+            if (sourceSets.hasOnlyKotlinFiles) {
+                if (dependencyAnalysis.hasOnlyMultiplatformCompatibleDependencies) {
                     ReadinessResult.Ready(readyReason = ReadyReason.Compatible, this)
                 } else {
                     ReadinessResult.NotReady("Incompatible Dependencies", this)

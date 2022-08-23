@@ -37,7 +37,7 @@ Run the `kmpReadiness` task and get a result like this:
 │ :samples:jvm                    │ Ready                                                                                                                                                  │
 │                                 │ {                                                                                                                                                      │
 │                                 │     "projectName": ":samples:jvm",                                                                                                                     │
-│                                 │     "dependencyAnalysisResult": {                                                                                                                      │
+│                                 │     "dependencyAnalysis": {                                                                                                                            │
 │                                 │         "compatible": [                                                                                                                                │
 │                                 │             "org.jetbrains.kotlin:kotlin-stdlib:1.6.21"                                                                                                │
 │                                 │         ],                                                                                                                                             │
@@ -49,7 +49,7 @@ Run the `kmpReadiness` task and get a result like this:
 │                                 │         "multiplatform": false,                                                                                                                        │
 │                                 │         "java": true                                                                                                                                   │
 │                                 │     },                                                                                                                                                 │
-│                                 │     "sourceSetSearcherResult": {                                                                                                                       │
+│                                 │     "sourceSets": {                                                                                                                                    │
 │                                 │         "sourceSetToFiles": {                                                                                                                          │
 │                                 │             "kotlin-main": [                                                                                                                           │
 │                                 │                 "/Users/samedwards/src/kmp-readiness/samples/jvm/src/main/java/kmp4free/samples/JvmLib.kt"                                             │
@@ -63,7 +63,7 @@ Run the `kmpReadiness` task and get a result like this:
 │ :samples:jvm_kmp4free           │ Ready                                                                                                                                                  │
 │                                 │ {                                                                                                                                                      │
 │                                 │     "projectName": ":samples:jvm_kmp4free",                                                                                                            │
-│                                 │     "dependencyAnalysisResult": {                                                                                                                      │
+│                                 │     "dependencyAnalysis": {                                                                                                                            │
 │                                 │         "compatible": [                                                                                                                                │
 │                                 │             "org.jetbrains.kotlin:kotlin-stdlib:1.6.21"                                                                                                │
 │                                 │         ],                                                                                                                                             │
@@ -75,7 +75,7 @@ Run the `kmpReadiness` task and get a result like this:
 │                                 │         "multiplatform": false,                                                                                                                        │
 │                                 │         "java": true                                                                                                                                   │
 │                                 │     },                                                                                                                                                 │
-│                                 │     "sourceSetSearcherResult": {                                                                                                                       │
+│                                 │     "sourceSets": {                                                                                                                                    │
 │                                 │         "sourceSetToFiles": {                                                                                                                          │
 │                                 │             "kotlin-main": [                                                                                                                           │
 │                                 │                 "/Users/samedwards/src/kmp-readiness/samples/jvm_kmp4free/src/main/kotlin/kmp4free/samples/JvmMain2.java",                             │
@@ -90,7 +90,7 @@ Run the `kmpReadiness` task and get a result like this:
 │ :samples:multiplatform          │ Ready                                                                                                                                                  │
 │                                 │ {                                                                                                                                                      │
 │                                 │     "projectName": ":samples:multiplatform",                                                                                                           │
-│                                 │     "dependencyAnalysisResult": {                                                                                                                      │
+│                                 │     "dependencyAnalysis": {                                                                                                                            │
 │                                 │         "compatible": [                                                                                                                                │
 │                                 │         ],                                                                                                                                             │
 │                                 │         "incompatible": [                                                                                                                              │
@@ -101,7 +101,7 @@ Run the `kmpReadiness` task and get a result like this:
 │                                 │         "multiplatform": true,                                                                                                                         │
 │                                 │         "java": false                                                                                                                                  │
 │                                 │     },                                                                                                                                                 │
-│                                 │     "sourceSetSearcherResult": {                                                                                                                       │
+│                                 │     "sourceSets": {                                                                                                                                    │
 │                                 │         "sourceSetToFiles": {                                                                                                                          │
 │                                 │         }                                                                                                                                              │
 │                                 │     }                                                                                                                                                  │
@@ -110,7 +110,7 @@ Run the `kmpReadiness` task and get a result like this:
 │ :samples:multiplatform_kmp4free │ Ready                                                                                                                                                  │
 │                                 │ {                                                                                                                                                      │
 │                                 │     "projectName": ":samples:multiplatform_kmp4free",                                                                                                  │
-│                                 │     "dependencyAnalysisResult": {                                                                                                                      │
+│                                 │     "dependencyAnalysis": {                                                                                                                            │
 │                                 │         "compatible": [                                                                                                                                │
 │                                 │             "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.21",                                                                                          │
 │                                 │             "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1"                                                                                      │
@@ -123,7 +123,7 @@ Run the `kmpReadiness` task and get a result like this:
 │                                 │         "multiplatform": false,                                                                                                                        │
 │                                 │         "java": true                                                                                                                                   │
 │                                 │     },                                                                                                                                                 │
-│                                 │     "sourceSetSearcherResult": {                                                                                                                       │
+│                                 │     "sourceSets": {                                                                                                                                    │
 │                                 │         "sourceSetToFiles": {                                                                                                                          │
 │                                 │             "kotlin-main": [                                                                                                                           │
 │                                 │                 "/Users/samedwards/src/kmp-readiness/samples/multiplatform_kmp4free/src/commonMain/kotlin/kmp4free/samples/MultiplatformCommonMain.kt" │
@@ -137,7 +137,7 @@ Run the `kmpReadiness` task and get a result like this:
 │ :samples:android_app            │ NotReady                                                                                                                                               │
 │                                 │ {                                                                                                                                                      │
 │                                 │     "projectName": ":samples:android_app",                                                                                                             │
-│                                 │     "dependencyAnalysisResult": {                                                                                                                      │
+│                                 │     "dependencyAnalysis": {                                                                                                                            │
 │                                 │         "compatible": [                                                                                                                                │
 │                                 │         ],                                                                                                                                             │
 │                                 │         "incompatible": [                                                                                                                              │
@@ -148,7 +148,7 @@ Run the `kmpReadiness` task and get a result like this:
 │                                 │         "multiplatform": false,                                                                                                                        │
 │                                 │         "java": false                                                                                                                                  │
 │                                 │     },                                                                                                                                                 │
-│                                 │     "sourceSetSearcherResult": {                                                                                                                       │
+│                                 │     "sourceSets": {                                                                                                                                    │
 │                                 │         "sourceSetToFiles": {                                                                                                                          │
 │                                 │         }                                                                                                                                              │
 │                                 │     }                                                                                                                                                  │
@@ -157,7 +157,7 @@ Run the `kmpReadiness` task and get a result like this:
 │ :samples:android_lib            │ NotReady                                                                                                                                               │
 │                                 │ {                                                                                                                                                      │
 │                                 │     "projectName": ":samples:android_lib",                                                                                                             │
-│                                 │     "dependencyAnalysisResult": {                                                                                                                      │
+│                                 │     "dependencyAnalysis": {                                                                                                                            │
 │                                 │         "compatible": [                                                                                                                                │
 │                                 │         ],                                                                                                                                             │
 │                                 │         "incompatible": [                                                                                                                              │
@@ -168,7 +168,7 @@ Run the `kmpReadiness` task and get a result like this:
 │                                 │         "multiplatform": false,                                                                                                                        │
 │                                 │         "java": false                                                                                                                                  │
 │                                 │     },                                                                                                                                                 │
-│                                 │     "sourceSetSearcherResult": {                                                                                                                       │
+│                                 │     "sourceSets": {                                                                                                                                    │
 │                                 │         "sourceSetToFiles": {                                                                                                                          │
 │                                 │         }                                                                                                                                              │
 │                                 │     }                                                                                                                                                  │
