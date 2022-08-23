@@ -27,8 +27,7 @@ internal abstract class KmpReadinessTask : DefaultTask() {
      */
     private val runOnSubprojects: Boolean
         get() {
-            // return project.isRootProject()
-            return true
+            return project.isRootProject()
         }
 
     @Suppress("NestedBlockDepth")
@@ -66,23 +65,30 @@ internal abstract class KmpReadinessTask : DefaultTask() {
             }
             body {
                 results.forEach {
-                    val value = it.value
-                    if (value is ReadinessResult.Ready) {
-                        row {
-                            cell(it.key)
-                            cell("${it.value::class.java.simpleName}(${value.readyReason})")
-                            cell(value.readinessData)
+                    val readinessResult = it.value
+                    val projectPath = it.key
+                    val reasonsText = buildString {
+                        readinessResult.readyReasons.forEach { reason ->
+                            appendLine("✅ ${reason.type}")
+                            reason.details?.let {
+                                append(reason.details)
+                            }
+                        }
+                        readinessResult.notReadyReasons.forEach { reason ->
+                            appendLine("❌ ${reason.type}")
+                            reason.details?.let {
+                                append(reason.details)
+                            }
                         }
                     }
-                }
-                results.forEach {
-                    val value = it.value
-                    if (value is ReadinessResult.NotReady) {
-                        row {
-                            cell(it.key)
-                            cell("${it.value::class.java.simpleName}(${value.reason})")
-                            cell(value.readinessData)
-                        }
+                    row {
+                        cell(projectPath)
+                        cell(buildString {
+                            appendLine(readinessResult.headline)
+                            appendLine("---")
+                            appendLine(reasonsText)
+                        })
+                        cell(readinessResult.readinessData)
                     }
                 }
             }

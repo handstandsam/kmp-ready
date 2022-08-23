@@ -1,5 +1,19 @@
 package com.handstandsam.kmpreadiness.internal.models
 
-internal enum class ReadyReason {
-    AlreadyEnabled, Compatible
+internal enum class ReadyReasonType {
+    MultiplatformPluginAlreadyEnabled, HasOnlyKotlinFiles, HasOnlyMultiplatformCompatibleDependencies, KotlinPluginEnabled
+}
+
+internal enum class NotReadyReasonType {
+    HasJavaFiles,  IncompatibleDependencies, DoesNotHaveKotlinJvmOrMultiplatformPlugin
+}
+
+internal sealed class Reason {
+    internal data class ReadyReason(val type: ReadyReasonType, val details: String? = null) :
+        Reason()
+
+    internal data class NotReadyReason(
+        val type: NotReadyReasonType,
+        val details: String? = null
+    ) : Reason()
 }

@@ -10,17 +10,23 @@ import java.nio.file.Path
 
 @Serializable
 internal data class SourceSetSearcherResult(val sourceSetToFiles: Map<String, List<String>>) {
-    val hasOnlyKotlinFiles: Boolean
-        get() {
-            val anyJavaFiles = sourceSetToFiles.entries
-                .any { entry ->
-                    entry.value.any { filePath ->
-                        filePath.endsWith(".java")
-                    }
+
+    fun findFilesEndingWith(suffix: String): List<String> {
+        val files = mutableListOf<String>()
+        sourceSetToFiles.forEach { entry ->
+            entry.value.filter { it.endsWith(suffix) }
+                .forEach { file ->
+                    files.add(file)
                 }
-            !anyJavaFiles
-            return true
         }
+        return files
+    }
+
+    val javaFiles: List<String> = findFilesEndingWith(".java")
+
+    val kotlinFiles: List<String> = findFilesEndingWith(".kt")
+
+    val hasOnlyKotlinFiles: Boolean = javaFiles.isEmpty()
 
     override fun toString(): String {
         return table {

@@ -1,8 +1,10 @@
 package com.handstandsam.kmpreadiness.internal
 
 import com.handstandsam.kmpreadiness.internal.models.KmpDependenciesAnalysisResult
+import com.handstandsam.kmpreadiness.internal.models.NotReadyReasonType
 import com.handstandsam.kmpreadiness.internal.models.ReadinessResult
-import com.handstandsam.kmpreadiness.internal.models.ReadyReason
+import com.handstandsam.kmpreadiness.internal.models.ReadyReasonType
+import com.handstandsam.kmpreadiness.internal.models.Reason
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
@@ -22,24 +24,66 @@ internal data class ReadinessData(
 ) {
 
     fun computeReadiness(): ReadinessResult {
-        return if (gradlePlugins.multiplatform) {
-            ReadinessResult.Ready(readyReason = ReadyReason.AlreadyEnabled, this)
-        } else if (gradlePlugins.kotlin) {
-            if (sourceSets.hasOnlyKotlinFiles) {
-                if (dependencyAnalysis.hasOnlyMultiplatformCompatibleDependencies) {
-                    ReadinessResult.Ready(readyReason = ReadyReason.Compatible, this)
-                } else {
-                    ReadinessResult.NotReady("Incompatible Dependencies", this)
-                }
-            } else {
-                ReadinessResult.NotReady("Contains Java Files", this)
-            }
+        val reasons = mutableListOf<Reason>()
+        if (dependencyAnalysis.hasOnlyMultiplatformCompatibleDependencies) {
+            reasons.addReadyReason(ReadyReasonType.HasOnlyMultiplatformCompatibleDependencies)
         } else {
-            ReadinessResult.NotReady("Does Not Have the Kotlin JVM or Multiplatform Plugin", this)
+            reasons.addNotReadyReason(
+                NotReadyReasonType.IncompatibleDependencies,
+                buildString {
+                    dependencyAnalysis.incompatible.forEach {
+                        appendLine("* $it")
+                    }
+                }
+            )
         }
+
+        if (sourceSets.hasOnlyKotlinFiles) {
+            reasons.addReadyReason(ReadyReasonType.HasOnlyKotlinFiles)
+        } else {
+            reasons.addNotReadyReason(
+                NotReadyReasonType.HasJavaFiles,
+                buildString {
+                    sourceSets.javaFiles.forEach { file ->
+                        appendLine("* $file")
+                    }
+                }
+            )
+        }
+
+        if (gradlePlugins.multiplatform) {
+            reasons.addReadyReason(ReadyReasonType.MultiplatformPluginAlreadyEnabled)
+        } else if (gradlePlugins.kotlin) {
+            reasons.addReadyReason(ReadyReasonType.KotlinPluginEnabled)
+        } else {
+            reasons.addNotReadyReason(NotReadyReasonType.DoesNotHaveKotlinJvmOrMultiplatformPlugin)
+        }
+
+        return ReadinessResult(
+            reasons = reasons,
+            readinessData = this
+        )
     }
 
     override fun toString(): String {
         return Json { prettyPrint = true }.encodeToString(serializer(), this)
     }
+}
+
+private fun MutableList<Reason>.addReadyReason(readyReasonType: ReadyReasonType, details: String? = null) {
+    this.add(
+        Reason.ReadyReason(
+            type = readyReasonType,
+            details = details,
+        )
+    )
+}
+
+private fun MutableList<Reason>.addNotReadyReason(notReadyReasonType: NotReadyReasonType, details: String? = null) {
+    this.add(
+        Reason.NotReadyReason(
+            type = notReadyReasonType,
+            details = details,
+        )
+    )
 }

@@ -6,6 +6,7 @@ plugins {
 
 dependencies {
   implementation(libs.kotlin.stdlib)
+  implementation(libs.truth)
   testImplementation(libs.kotlin.test.common)
   testImplementation(libs.truth)
 }

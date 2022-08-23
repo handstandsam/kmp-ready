@@ -2,9 +2,15 @@ package com.handstandsam.kmpreadiness.internal.models
 
 import com.handstandsam.kmpreadiness.internal.ReadinessData
 
+internal data class ReadinessResult(val reasons: List<Reason>, val readinessData: ReadinessData) {
+    val readyReasons: List<Reason.ReadyReason> =
+        reasons.filterIsInstance<Reason.ReadyReason>()
+    val notReadyReasons: List<Reason.NotReadyReason> =
+        reasons.filterIsInstance<Reason.NotReadyReason>()
 
-
-internal sealed class ReadinessResult {
-    data class Ready(val readyReason: ReadyReason, val readinessData: ReadinessData) : ReadinessResult()
-    data class NotReady(val reason: String, val readinessData: ReadinessData) : ReadinessResult()
+    val headline: String = if (notReadyReasons.isEmpty()) {
+        "KMP Ready"
+    } else {
+        "Not KMP Ready"
+    }
 }

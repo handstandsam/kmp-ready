@@ -11,16 +11,19 @@ import io.ktor.client.request.parameter
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-internal class MavenSearchRemote(
-    val jsonSerializer: Json = Json {
+internal object JsonSerializer {
+    val json: Json = Json {
         prettyPrint = true
         isLenient = true
         ignoreUnknownKeys = true
-    },
+    }
+}
+
+internal class MavenSearchRemote(
     val httpClient: HttpClient = HttpClient(CIO) {
         install(Logging)
         install(ContentNegotiation) {
-            json(jsonSerializer)
+            json(JsonSerializer.json)
         }
     }
 ) {

@@ -36,7 +36,11 @@ internal class DependenciesReadinessProcessor(private val tempDir: File) {
                 readinessRepo.add(KmpReadyResult(gav, true))
                 compatible.add(gav)
             } else {
-                if (!readinessRepo.hasBeenChecked(gav)) {
+                if (readinessRepo.readyCache.contains(gav)) {
+                    compatible.add(gav)
+                } else if (readinessRepo.notReadyCache.contains(gav)) {
+                    incompatible.add(gav)
+                } else {
                     val kmpReadyResult = MavenSearchRemote().searchFor(gav)
                     readinessRepo.add(kmpReadyResult)
                     if (kmpReadyResult.isReady) {
