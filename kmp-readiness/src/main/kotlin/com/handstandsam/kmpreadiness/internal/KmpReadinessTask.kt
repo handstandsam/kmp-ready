@@ -62,19 +62,27 @@ internal abstract class KmpReadinessTask : DefaultTask() {
             }
 
             header {
-                row("Module Path", "KMP Readiness Result")
+                row("Module", "KMP Readiness Result", "Data")
             }
             body {
                 results.forEach {
                     val value = it.value
                     if (value is ReadinessResult.Ready) {
-                        row(it.key, it.value::class.java.simpleName + "\n" + value.readinessData)
+                        row {
+                            cell(it.key)
+                            cell("${it.value::class.java.simpleName}(${value.readyReason})")
+                            cell(value.readinessData)
+                        }
                     }
                 }
                 results.forEach {
                     val value = it.value
                     if (value is ReadinessResult.NotReady) {
-                        row(it.key, it.value::class.java.simpleName + "\n" + value.readinessData)
+                        row {
+                            cell(it.key)
+                            cell("${it.value::class.java.simpleName}(${value.reason})")
+                            cell(value.readinessData)
+                        }
                     }
                 }
             }
