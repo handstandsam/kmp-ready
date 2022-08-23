@@ -1,5 +1,34 @@
 # KMP Readiness IS UNDER DEVELOPMENT
 
+# Decisioning Logic
+## Positive Signals ✅
+### Only Kotlin `.kt` Source Files
+### Using Kotlin JVM Plugin
+### Uses the Kotlin Multiplatform Plugin
+* NOTE: We could check the configuration in the future to see if it has multiple targets if deemed important.
+
+## Negative Signals ❌
+### Are there any java imports in the source files?
+Imports starting with `java.`, etc.
+* Iterate through all `main` sourcesets for a simple `.contains("import java.")` List of all java stdlib packages: https://docs.oracle.com/en/java/javase/11/docs/api/java.base/module-summary.html
+* NOTE: This wouldn't find fully qualified references, but that could be added later if deemed important.
+### Any non-multiplatform dependencies?
+Search for transitive artifacts that are not multiplatform compatible
+* Use a list of well known libraries that are known to be multiplatform compatible, but then using the Maven Search API to look for the presence of the `kotlin-tooling-metadata.json` object via their JSON API at https://search.maven.org/.
+  * Example request for `ktor-client-core`: https://search.maven.org/solrsearch/select?q=g%3Aio.ktor+AND+a%3Aktor-client-core+AND+v%3A2.1.0+AND+p%3Ajar+AND+l%3Akotlin-tooling-metadata&rows=1&wt=json
+* NOTE: These results would be cached, the same way dependencies are today.
+* NOTE: We could traverse local module dependencies, and check theirs as well if deemed important.  
+### Is this an Android Library Module?
+Could work if...
+* No `res` folder
+* No `assets` folder
+* Uses no `android.` packages in the source
+* `AndroidManifest.xml` only defines package name.
+
+
+# `kmpReadiness` Gradle Task
+Could be applied to a specific module or the root so that all modules are scanned.
+
 Run the `kmpReadiness` task and get a result like this:
 ```
 ┌─────────────────────────────────┬────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
