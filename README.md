@@ -1,6 +1,6 @@
 # KMP Readiness IS UNDER DEVELOPMENT
 [![LICENSE](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/handstandsam/kmp-readiness/blob/main/LICENSE)
-[![Latest Snapshot](https://img.shields.io/badge/dynamic/xml?url=https://s01.oss.sonatype.org/content/repositories/snapshots/com/handstandsam/kmp-readiness/kmp-readiness/maven-metadata.xml&label=Latest%20Snapshot&color=orange&query=.//versioning/latest)](https://s01.oss.sonatype.org/content/repositories/snapshots/com/handstandsam/com.handstandsam.kmp-readiness.gradle.plugin/)
+[![Latest Snapshot](https://img.shields.io/badge/dynamic/xml?url=https://s01.oss.sonatype.org/content/repositories/snapshots/com/handstandsam/kmp-readiness/kmp-readiness/maven-metadata.xml&label=Latest%20Snapshot&color=orange&query=.//versioning/latest)](https://s01.oss.sonatype.org/content/repositories/snapshots/com/handstandsam/kmp-readiness/com.handstandsam.kmp-readiness.gradle.plugin/)
 [![CI](https://github.com/handstandsam/kmp-readiness/workflows/CI/badge.svg)](https://github.com/handstandsam/kmp-readiness/actions?query=branch%3Amain)
 
 # Decisioning Logic
