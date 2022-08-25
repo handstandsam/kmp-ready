@@ -50,6 +50,7 @@ mavenPublish {
 dependencies {
     compileOnly(gradleApi())
     implementation(libs.kotlin.gradle.plugin)
+    implementation(libs.android.gradle.plugin)
 
     implementation("com.jakewharton.picnic:picnic:0.6.0")
 

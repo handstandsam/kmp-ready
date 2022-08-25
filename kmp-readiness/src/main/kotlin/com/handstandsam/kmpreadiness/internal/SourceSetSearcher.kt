@@ -1,12 +1,17 @@
 package com.handstandsam.kmpreadiness.internal
 
+import com.android.build.api.dsl.LibraryExtension
 import com.jakewharton.picnic.table
 import kotlinx.serialization.Serializable
 import org.gradle.api.Project
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.plugins.JavaPluginExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
+import java.io.IOException
+import java.nio.file.Files
 import java.nio.file.Path
+import java.util.stream.Collectors
 
 @Serializable
 internal data class SourceSetSearcherResult(val sourceSetToFiles: Map<String, List<String>>) {
@@ -46,25 +51,47 @@ internal data class SourceSetSearcherResult(val sourceSetToFiles: Map<String, Li
     }
 }
 
-internal class SourceSetSearcher() {
+internal class SourceSetSearcher {
 
-    private fun lookInJavaPlugin() {
+    // list all files from this path
+    @Throws(IOException::class)
+    private fun listFiles(path: Path?): List<Path> {
+        var result = mutableListOf<Path>()
+        Files.walk(path).use { walk ->
+            result = walk.filter { it.toFile().isFile }
+                .collect(Collectors.toList())
+        }
+        return result
     }
 
     fun walkSourceDirectorySet(sourceFiles: SourceDirectorySet, endsWith: String): List<Path> {
-        return sourceFiles
-            .filter {
-                it.exists()
+        val paths = mutableListOf<Path>()
+        sourceFiles
+            .forEach {
+                paths.addAll(listFiles(it.toPath()))
             }
-            .map { it.toPath() }
+        return paths
     }
 
     fun searchSourceSets(project: Project): SourceSetSearcherResult {
         val sourceSetToFiles = mutableMapOf<String, List<String>>()
 
+        project.extensions.findByType(KotlinAndroidProjectExtension::class.java)?.let { projectExtension ->
+            projectExtension.sourceSets
+                .filter { !it.name.toLowerCase().contains("test") }
+                .forEach { sourceSet ->
+                    val matchingFiles = mutableListOf<Path>().apply {
+                        addAll(walkSourceDirectorySet(sourceSet.kotlin, ""))
+                        addAll(walkSourceDirectorySet(sourceSet.resources, ")"))
+                    }
+                    sourceSetToFiles["android-${sourceSet.name}"] = matchingFiles.map { it.toString() }
+                }
+            println(this)
+        }
+
         project.extensions.findByType(KotlinJvmProjectExtension::class.java)?.apply {
             sourceSets
-                .filter { it.name == "main" }
+                .filter { !it.name.toLowerCase().contains("test") }
                 .forEach { sourceSet ->
                     val matchingFiles = walkSourceDirectorySet(sourceSet.kotlin, "")
                     sourceSetToFiles["kotlin-${sourceSet.name}"] = matchingFiles.map { it.toString() }
@@ -73,7 +100,7 @@ internal class SourceSetSearcher() {
 
         project.extensions.findByType(JavaPluginExtension::class.java)?.apply {
             sourceSets
-                .filter { it.name == "main" }
+                .filter { !it.name.toLowerCase().contains("test") }
                 .forEach { sourceSet ->
                     val matchingFiles = walkSourceDirectorySet(sourceSet.java, "")
                     sourceSetToFiles["java-${sourceSet.name}"] = matchingFiles.map { it.toString() }

@@ -5,7 +5,7 @@ internal enum class ReadyReasonType {
 }
 
 internal enum class NotReadyReasonType {
-    HasJavaFiles,  IncompatibleDependencies, DoesNotHaveKotlinJvmOrMultiplatformPlugin
+    HasJavaFiles,  IncompatibleDependencies, DoesNotHaveKotlinJvmOrMultiplatformPlugin, IsAndroidApplication
 }
 
 internal sealed class Reason {
