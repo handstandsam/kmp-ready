@@ -1,11 +1,19 @@
 package com.handstandsam.kmpreadiness.internal.models
 
 internal enum class ReadyReasonType {
-    MultiplatformPluginAlreadyEnabled, HasOnlyKotlinFiles, HasOnlyMultiplatformCompatibleDependencies, KotlinPluginEnabled
+    MultiplatformPluginAlreadyEnabled,
+    HasOnlyKotlinFiles,
+    HasOnlyMultiplatformCompatibleDependencies,
+    KotlinPluginEnabled
 }
 
 internal enum class NotReadyReasonType {
-    HasJavaFiles,  IncompatibleDependencies, DoesNotHaveKotlinJvmOrMultiplatformPlugin, IsAndroidApplication, IsAndroidLibrary
+    HasJavaFiles,
+    IncompatibleDependencies,
+    DoesNotHaveKotlinJvmOrMultiplatformPlugin,
+    IsAndroidApplication,
+    IsAndroidLibrary,
+    HasJavaPlugin
 }
 
 internal sealed class Reason {

@@ -8,6 +8,7 @@ internal class DependenciesReadinessProcessor(private val tempDir: File) {
 
     val excludedArtifacts = listOf(
         "org.jetbrains.kotlin:kotlin-stdlib",
+        "org.jetbrains.kotlin:kotlin-stdlib-common",
         "org.jetbrains.kotlin:kotlin-stdlib-jdk7",
         "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
         "org.jetbrains.kotlinx:kotlinx-coroutines-core",

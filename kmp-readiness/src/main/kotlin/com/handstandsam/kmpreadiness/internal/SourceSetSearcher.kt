@@ -39,10 +39,11 @@ internal data class SourceSetSearcherResult(val sourceSetToFiles: Map<String, Li
                 row("SourceSet", "Files")
             }
             body {
-                sourceSetToFiles.forEach {
-                    row(it.key, buildString {
-                        it.value.forEach {
-                            appendLine("* " + it)
+                sourceSetToFiles.keys.forEach { sourceSetName: String ->
+                    val files = sourceSetToFiles[sourceSetName]!!
+                    row(sourceSetName, buildString {
+                        files.forEach {
+                            appendLine("* $it")
                         }
                     })
                 }

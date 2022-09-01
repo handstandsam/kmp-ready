@@ -16,21 +16,6 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinAndroidPluginWrapper
 
-internal object AndroidLibraryReadiness {
-    fun gatherData(target: Project): AndroidLibraryInfo {
-        target.plugins.forEach {
-            println("Plugin: $it")
-        }
-
-        // TODO Use Real Values
-        return AndroidLibraryInfo(
-            resFolder = false,
-            assetFolder = false,
-            referenceAndroidPackages = false
-        )
-    }
-}
-
 internal class ReadinessCalculator(private val target: Project) {
 
     fun Project.hasExtension(extensionClass: Class<*>): Boolean {
@@ -45,20 +30,18 @@ internal class ReadinessCalculator(private val target: Project) {
             androidLibrary = target.hasExtension(LibraryExtension::class.java),
             androidApplication = target.hasExtension(ApplicationExtension::class.java),
             kotlinJvm = target.hasExtension(KotlinJvmProjectExtension::class.java),
+            plugins = target.plugins.map { it::class.java.name }
         )
         val sourceSetSearcherResult = SourceSetSearcher().searchSourceSets(target)
         val kmpDependenciesAnalysisResult = runBlocking {
             DependenciesReadinessProcessor(FileUtil.projectDirOutputFile(target)).process(computedDependencies)
         }
 
-        val androidLibraryInfo = AndroidLibraryReadiness.gatherData(target)
-
         val kmpReadinessData = ReadinessData(
             projectName = target.path,
             dependencyAnalysis = kmpDependenciesAnalysisResult,
             gradlePlugins = appliedGradlePlugins,
             sourceSets = sourceSetSearcherResult,
-            androidLibraryInfo = androidLibraryInfo
         )
         return kmpReadinessData
     }
@@ -112,25 +95,37 @@ internal class ReadinessCalculator(private val target: Project) {
                     NotReadyReasonType.HasJavaFiles,
                     buildString {
                         sourceSets.javaFiles.forEach { file ->
-                            appendLine("* $file")
+                            appendLine(" * $file")
                         }
                     }
                 )
             }
-            if (gradlePlugins.kotlinMultiplatform) {
-                reasons.addReadyReason(ReadyReasonType.MultiplatformPluginAlreadyEnabled)
+            if(gradlePlugins.hasCompatiblePlugin()){
+                if (gradlePlugins.kotlinMultiplatform) {
+                    reasons.addReadyReason(ReadyReasonType.MultiplatformPluginAlreadyEnabled)
+                }
+                if (gradlePlugins.kotlinJvm) {
+                    reasons.addReadyReason(ReadyReasonType.KotlinPluginEnabled)
+                }
+            }else{
+                reasons.addNotReadyReason(NotReadyReasonType.DoesNotHaveKotlinJvmOrMultiplatformPlugin, buildString {
+                    appendLine("Applied Plugins")
+                    gradlePlugins.plugins.forEach { plugin: String ->
+                        appendLine(" * $plugin")
+                    }
+                })
+                if (gradlePlugins.androidLibrary) {
+                    reasons.addNotReadyReason(NotReadyReasonType.IsAndroidLibrary)
+                }
+                if (gradlePlugins.androidApplication) {
+                    reasons.addNotReadyReason(NotReadyReasonType.IsAndroidApplication)
+                }
+                if(gradlePlugins.java){
+                    reasons.addNotReadyReason(NotReadyReasonType.HasJavaPlugin)
+                }
+
             }
-            if (gradlePlugins.kotlinJvm) {
-                reasons.addReadyReason(ReadyReasonType.KotlinPluginEnabled)
-            }
-            if (gradlePlugins.androidLibrary) {
-                reasons.addNotReadyReason(NotReadyReasonType.IsAndroidLibrary)
-            }
-            if (gradlePlugins.androidApplication) {
-                reasons.addNotReadyReason(NotReadyReasonType.IsAndroidApplication)
-            } else {
-                reasons.addNotReadyReason(NotReadyReasonType.DoesNotHaveKotlinJvmOrMultiplatformPlugin)
-            }
+
         }
 
         return ReadinessResult(
