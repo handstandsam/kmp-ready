@@ -124,7 +124,7 @@ internal class ReadinessCalculator(private val target: Project) {
                 reasons.addReadyReason(ReadyReasonType.KotlinPluginEnabled)
             }
             if (gradlePlugins.androidLibrary) {
-                reasons.addNotReadyReason(NotReadyReasonType.IsAndroidApplication)
+                reasons.addNotReadyReason(NotReadyReasonType.IsAndroidLibrary)
             }
             if (gradlePlugins.androidApplication) {
                 reasons.addNotReadyReason(NotReadyReasonType.IsAndroidApplication)
