@@ -13,7 +13,6 @@ internal enum class NotReadyReasonType {
     DoesNotHaveKotlinJvmOrMultiplatformPlugin,
     IsAndroidApplication,
     IsAndroidLibrary,
-    HasJavaPlugin,
     UsesJdkImports
 }
 

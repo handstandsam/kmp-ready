@@ -9,7 +9,6 @@ internal data class AppliedGradlePlugins(
     val kotlinMultiplatform: Boolean,
     val androidLibrary: Boolean,
     val androidApplication: Boolean,
-    val java: Boolean,
     val plugins: List<String>
 ) {
     fun hasCompatiblePlugin(): Boolean {
@@ -17,7 +16,7 @@ internal data class AppliedGradlePlugins(
     }
 
     fun isKnownPlugin(): Boolean {
-        return kotlinJvm || kotlinMultiplatform || androidLibrary || androidApplication || java
+        return kotlinJvm || kotlinMultiplatform || androidLibrary || androidApplication
     }
 }
 

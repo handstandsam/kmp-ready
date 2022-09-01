@@ -9,10 +9,12 @@ import com.handstandsam.kmpreadiness.internal.models.ReadyReasonType
 import com.handstandsam.kmpreadiness.internal.models.Reason
 import com.handstandsam.kmpreadiness.internal.util.FileUtil
 import kotlinx.coroutines.runBlocking
+import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinMultiplatformPlugin
 
 internal class ReadinessDataCalculator(private val target: Project) {
 
@@ -23,12 +25,13 @@ internal class ReadinessDataCalculator(private val target: Project) {
     private fun computeReadinessData(): ReadinessData {
         val computedDependencies = DepTraversal.getGavsForProject(target)
         val appliedGradlePlugins = AppliedGradlePlugins(
-            java = target.hasExtension(JavaPluginExtension::class.java),
             kotlinMultiplatform = target.hasExtension(KotlinMultiplatformExtension::class.java),
             androidLibrary = target.hasExtension(LibraryExtension::class.java),
             androidApplication = target.hasExtension(ApplicationExtension::class.java),
             kotlinJvm = target.hasExtension(KotlinJvmProjectExtension::class.java),
             plugins = target.plugins.map { it::class.java.name }
+                .filter { !it.startsWith("org.gradle.") }
+                .sortedBy { it }
         )
         val sourceSetSearcherResult = SourceSetSearcher().searchSourceSets(target)
         val kmpDependenciesAnalysisResult = runBlocking {
@@ -101,7 +104,7 @@ internal class ReadinessDataCalculator(private val target: Project) {
 
             if (readinessData.sourceSets.javaBaseReferences.isNotEmpty()) {
                 reasons.addNotReadyReason(NotReadyReasonType.UsesJdkImports, buildString {
-                    appendLine("JDK Usages")
+                    appendLine("JDK Base Library Usages")
                     readinessData.sourceSets.javaBaseReferences.forEach { javaBaseUsagesInFile: JavaBaseUsagesInFile ->
                         javaBaseUsagesInFile.references.forEach { jdkReference ->
                             appendLine(" * ${jdkReference.lineContent}")
@@ -130,9 +133,6 @@ internal class ReadinessDataCalculator(private val target: Project) {
                 }
                 if (gradlePlugins.androidApplication) {
                     reasons.addNotReadyReason(NotReadyReasonType.IsAndroidApplication)
-                }
-                if (gradlePlugins.java) {
-                    reasons.addNotReadyReason(NotReadyReasonType.HasJavaPlugin)
                 }
             }
 
