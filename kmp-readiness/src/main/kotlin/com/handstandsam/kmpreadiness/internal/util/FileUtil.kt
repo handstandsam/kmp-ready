@@ -1,4 +1,4 @@
-package com.handstandsam.kmpreadiness.internal
+package com.handstandsam.kmpreadiness.internal.util
 
 import org.gradle.api.Project
 import java.io.File

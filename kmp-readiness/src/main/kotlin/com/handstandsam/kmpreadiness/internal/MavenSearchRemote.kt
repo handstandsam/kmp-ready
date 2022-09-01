@@ -1,6 +1,8 @@
 package com.handstandsam.kmpreadiness.internal
 
 import com.handstandsam.kmpreadiness.internal.models.Gav
+import com.handstandsam.kmpreadiness.internal.models.KmpReadyResult
+import com.handstandsam.kmpreadiness.internal.models.SearchResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO

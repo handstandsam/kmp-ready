@@ -1,22 +1,20 @@
 package com.handstandsam.kmpreadiness.internal
 
 import com.android.build.api.dsl.ApplicationExtension
-import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.LibraryExtension
-import com.android.build.gradle.api.AndroidBasePlugin
 import com.handstandsam.kmpreadiness.internal.deptraversal.DepTraversal
 import com.handstandsam.kmpreadiness.internal.models.NotReadyReasonType
 import com.handstandsam.kmpreadiness.internal.models.ReadinessResult
 import com.handstandsam.kmpreadiness.internal.models.ReadyReasonType
 import com.handstandsam.kmpreadiness.internal.models.Reason
+import com.handstandsam.kmpreadiness.internal.util.FileUtil
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.plugin.KotlinAndroidPluginWrapper
 
-internal class ReadinessCalculator(private val target: Project) {
+internal class ReadinessDataCalculator(private val target: Project) {
 
     fun Project.hasExtension(extensionClass: Class<*>): Boolean {
         return target.extensions.findByType(extensionClass) != null
@@ -100,14 +98,27 @@ internal class ReadinessCalculator(private val target: Project) {
                     }
                 )
             }
-            if(gradlePlugins.hasCompatiblePlugin()){
+
+            if (readinessData.sourceSets.javaBaseReferences.isNotEmpty()) {
+                reasons.addNotReadyReason(NotReadyReasonType.UsesJdkImports, buildString {
+                    appendLine("JDK Usages")
+                    readinessData.sourceSets.javaBaseReferences.forEach { javaBaseUsagesInFile: JavaBaseUsagesInFile ->
+                        javaBaseUsagesInFile.references.forEach { jdkReference ->
+                            appendLine(" * ${jdkReference.lineContent}")
+                            appendLine("   ${javaBaseUsagesInFile.filePath}:${jdkReference.lineNumber}")
+                        }
+                    }
+                })
+            }
+
+            if (gradlePlugins.hasCompatiblePlugin()) {
                 if (gradlePlugins.kotlinMultiplatform) {
                     reasons.addReadyReason(ReadyReasonType.MultiplatformPluginAlreadyEnabled)
                 }
                 if (gradlePlugins.kotlinJvm) {
                     reasons.addReadyReason(ReadyReasonType.KotlinPluginEnabled)
                 }
-            }else{
+            } else {
                 reasons.addNotReadyReason(NotReadyReasonType.DoesNotHaveKotlinJvmOrMultiplatformPlugin, buildString {
                     appendLine("Applied Plugins")
                     gradlePlugins.plugins.forEach { plugin: String ->
@@ -120,10 +131,9 @@ internal class ReadinessCalculator(private val target: Project) {
                 if (gradlePlugins.androidApplication) {
                     reasons.addNotReadyReason(NotReadyReasonType.IsAndroidApplication)
                 }
-                if(gradlePlugins.java){
+                if (gradlePlugins.java) {
                     reasons.addNotReadyReason(NotReadyReasonType.HasJavaPlugin)
                 }
-
             }
 
         }

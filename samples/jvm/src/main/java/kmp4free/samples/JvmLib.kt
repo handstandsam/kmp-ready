@@ -6,6 +6,7 @@ object JvmLib {
 
     val list = Arrays.asList("A", "B")
 
-    val className = JvmLib::class.java.simpleName
+    val instant: java.time.Instant? = null
 
+    val className = JvmLib::class.java.simpleName
 }

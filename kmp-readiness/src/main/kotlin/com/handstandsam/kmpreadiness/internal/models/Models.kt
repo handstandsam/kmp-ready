@@ -1,4 +1,4 @@
-package com.handstandsam.kmpreadiness.internal
+package com.handstandsam.kmpreadiness.internal.models
 
 import kotlinx.serialization.Serializable
 

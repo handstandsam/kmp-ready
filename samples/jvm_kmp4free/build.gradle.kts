@@ -2,7 +2,6 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 plugins {
     id("com.handstandsam.kmp4free")
-    id("com.handstandsam.kmp-readiness")
 }
 
 dependencies {

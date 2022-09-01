@@ -19,7 +19,7 @@ internal abstract class KmpReadinessTask : DefaultTask() {
     }
 
     private fun executeForProject(target: Project): ReadinessResult {
-        return ReadinessCalculator(target).computeReadinessResult()
+        return ReadinessDataCalculator(target).computeReadinessResult()
     }
 
     /**
