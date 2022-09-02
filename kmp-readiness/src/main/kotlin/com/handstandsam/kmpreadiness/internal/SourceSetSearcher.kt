@@ -117,7 +117,8 @@ internal class SourceSetSearcher {
                         "java.util",
                         "javax.crypto",
                         "javax.net",
-                        "javax.security"
+                        "javax.security",
+                        "javax.inject"
                     ).forEach {
                         if (lineContents.contains(it)) {
                             javaBaseReferences.add(
