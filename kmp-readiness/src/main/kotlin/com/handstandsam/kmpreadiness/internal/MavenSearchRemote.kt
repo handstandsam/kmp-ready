@@ -5,7 +5,7 @@ import com.handstandsam.kmpreadiness.internal.models.KmpReadyResult
 import com.handstandsam.kmpreadiness.internal.models.SearchResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.engine.cio.CIO
+import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.get
@@ -22,7 +22,7 @@ internal object JsonSerializer {
 }
 
 internal class MavenSearchRemote(
-    val httpClient: HttpClient = HttpClient(CIO) {
+    val httpClient: HttpClient = HttpClient(OkHttp) {
         install(Logging)
         install(ContentNegotiation) {
             json(JsonSerializer.json)

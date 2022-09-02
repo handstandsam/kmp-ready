@@ -47,11 +47,11 @@ internal abstract class KmpReadinessTask : DefaultTask() {
             results[project.path] = executeForProject(project)
         }
 
-        val terminalOutput = toTerminalOutput(results)
+        val terminalOutput = toTerminalOutput(results, logger.isInfoEnabled)
         println(terminalOutput)
     }
 
-    private fun toTerminalOutput(results: MutableMap<String, ReadinessResult>): String {
+    private fun toTerminalOutput(results: MutableMap<String, ReadinessResult>, isInfoLoggingEnabled: Boolean): String {
 
         return table {
             cellStyle {
@@ -61,7 +61,13 @@ internal abstract class KmpReadinessTask : DefaultTask() {
             }
 
             header {
-                row("Module", "KMP Readiness Result", "Data")
+                row {
+                    cell("Module")
+                    cell("KMP Readiness Result")
+                    if (isInfoLoggingEnabled) {
+                        cell("Collected Data")
+                    }
+                }
             }
             body {
                 results.forEach {
@@ -88,7 +94,9 @@ internal abstract class KmpReadinessTask : DefaultTask() {
                             appendLine("---")
                             appendLine(reasonsText)
                         })
-                        cell(readinessResult.readinessData)
+                        if (isInfoLoggingEnabled) {
+                            cell(readinessResult.readinessData)
+                        }
                     }
                 }
             }
