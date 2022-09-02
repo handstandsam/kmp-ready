@@ -27,7 +27,6 @@ internal class ReadinessDataCalculator(private val target: Project) {
             androidApplication = target.hasExtension(ApplicationExtension::class.java),
             kotlinJvm = target.hasExtension(KotlinJvmProjectExtension::class.java),
             plugins = target.plugins.map { it::class.java.name }
-                .filter { !it.startsWith("org.gradle.") }
                 .sortedBy { it }
         )
         val sourceSetSearcherResult = SourceSetSearcher().searchSourceSets(target)
@@ -88,9 +87,10 @@ internal class ReadinessDataCalculator(private val target: Project) {
 
             if (gradlePlugins.androidLibrary) {
                 reasons.addNotReadyReason(NotReadyReasonType.IsAndroidLibrary)
-            }
-            if (gradlePlugins.androidApplication) {
+            }else             if (gradlePlugins.androidApplication) {
                 reasons.addNotReadyReason(NotReadyReasonType.IsAndroidApplication)
+            }else{
+
             }
 
             if (readinessData.sourceSets.hasOnlyKotlinFiles) {

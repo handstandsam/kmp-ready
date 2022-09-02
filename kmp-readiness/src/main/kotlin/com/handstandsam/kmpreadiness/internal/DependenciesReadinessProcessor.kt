@@ -13,6 +13,8 @@ internal class DependenciesReadinessProcessor(private val tempDir: File) {
         "org.jetbrains.kotlin:kotlin-stdlib-jdk7",
         "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
         "org.jetbrains.kotlinx:kotlinx-coroutines-core",
+        "org.jetbrains.kotlinx:kotlinx-serialization-core",
+        "org.jetbrains.kotlinx:kotlinx-serialization-json",
     ).map {
         val tokens = it.split(":")
         Gav(
@@ -34,6 +36,7 @@ internal class DependenciesReadinessProcessor(private val tempDir: File) {
         val compatible = mutableListOf<Gav>()
         val incompatible = mutableListOf<Gav>()
         depsToProcess.forEach { gav ->
+
             if (isExcluded(gav)) {
                 readinessRepo.add(KmpReadyResult(gav, true))
                 compatible.add(gav)
@@ -56,7 +59,8 @@ internal class DependenciesReadinessProcessor(private val tempDir: File) {
         }
         return KmpDependenciesAnalysisResult(
             compatible = compatible.map { it.id },
-            incompatible = incompatible.map { it.id }
+            incompatible = incompatible.map { it.id },
+            all = depsToProcess.map { it.id }
         )
     }
 }
