@@ -5,7 +5,22 @@ plugins {
     alias(libs.plugins.dokka)
     alias(libs.plugins.mavenPublish)
     alias(libs.plugins.binaryCompatibilityValidator)
-    kotlin("plugin.serialization") version "1.6.21"
+    kotlin("plugin.serialization") version "1.5.31"
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    kotlinOptions {
+        jvmTarget = "1.8"
+        // Because Gradle's Kotlin handling, this falls out of date quickly
+        apiVersion = "1.5"
+        languageVersion = "1.5"
+
+        // We use class SAM conversions because lambdas compiled into invokedynamic are not
+        // Serializable, which causes accidental headaches with Gradle configuration caching. It's
+        // easier for us to just use the previous anonymous classes behavior
+        @Suppress("SuspiciousCollectionReassignment")
+        freeCompilerArgs += "-Xsam-conversion=class"
+    }
 }
 
 allprojects {
@@ -54,13 +69,10 @@ dependencies {
 
     implementation("com.jakewharton.picnic:picnic:0.6.0")
 
-    val ktor_version = "2.1.0"
-    implementation("io.ktor:ktor-client-core:$ktor_version")
-    implementation("io.ktor:ktor-client-okhttp:$ktor_version")
-    implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
-    implementation("io.ktor:ktor-client-logging:$ktor_version")
-    implementation(libs.kotlin.stdlib)
+    implementation(libs.okhttp)
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.3.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
+    implementation(libs.kotlin.coroutines)
     testImplementation(libs.kotlin.test.common)
     testImplementation(libs.truth)
 }

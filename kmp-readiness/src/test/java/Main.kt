@@ -168,7 +168,6 @@ internal fun main(): Unit = runBlocking {
         xerces:xercesImpl:2.12.0
         xml-apis:xml-apis:1.4.01
         org.jetbrains.kotlin:kotlin-stdlib:1.6.21
-        io.ktor:ktor-client:2.1.0
     """.trimIndent().lines()
         .map { Gav.fromString(it)!! }
 

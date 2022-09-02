@@ -3,15 +3,10 @@ package com.handstandsam.kmpreadiness.internal
 import com.handstandsam.kmpreadiness.internal.models.Gav
 import com.handstandsam.kmpreadiness.internal.models.KmpReadyResult
 import com.handstandsam.kmpreadiness.internal.models.SearchResponse
-import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.logging.Logging
-import io.ktor.client.request.get
-import io.ktor.client.request.parameter
-import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import okhttp3.HttpUrl
+import okhttp3.OkHttpClient
+import okhttp3.Request
 
 internal object JsonSerializer {
     val json: Json = Json {
@@ -22,18 +17,18 @@ internal object JsonSerializer {
 }
 
 internal class MavenSearchRemote(
-    val httpClient: HttpClient = HttpClient(OkHttp) {
-        install(Logging)
-        install(ContentNegotiation) {
-            json(JsonSerializer.json)
-        }
-    }
+    val httpClient: OkHttpClient = OkHttpClient.Builder().build()
 ) {
 
     suspend fun searchFor(gav: Gav): KmpReadyResult {
-        val httpResponse = httpClient.get("https://search.maven.org/solrsearch/select") {
-            url {
-                val q = buildString {
+        val request = Request.Builder().apply {
+
+            val httpUrl = HttpUrl.Builder().apply {
+                scheme("https")
+                host("search.maven.org")
+                addPathSegment("solrsearch")
+                addPathSegment("select")
+                val mavenSearchQuery = buildString {
                     append("g:${gav.group}")
                     append(" AND ")
                     append("a:${gav.artifact}")
@@ -44,15 +39,20 @@ internal class MavenSearchRemote(
                     append(" AND ")
                     append("l:kotlin-tooling-metadata")
                 }
-                parameter("q", q)
-                parameter("rows", 1)
-                parameter("wt", "json")
-            }
-            println("Making Request To: ${this.build().url}")
-        }
+                addQueryParameter("q", mavenSearchQuery)
+                addQueryParameter("rows", "1")
+                addQueryParameter("wt", "json")
+            }.build()
+            url(httpUrl)
+        }.build()
+        val httpResponse = httpClient.newCall(request).execute()
 
-        if (httpResponse.status.value in 200..299) {
-            val searchResponse = httpResponse.body<SearchResponse>()
+        println("Making Request To: ${request.url.toUrl()}")
+
+        if (httpResponse.code in 200..299) {
+            val jsonResponse = httpResponse.body!!.string()
+            val searchResponse: SearchResponse =
+                JsonSerializer.json.decodeFromString(SearchResponse.serializer(), jsonResponse)
             val isReady = searchResponse.response.numFound == 1
             return KmpReadyResult(
                 gav = gav,
