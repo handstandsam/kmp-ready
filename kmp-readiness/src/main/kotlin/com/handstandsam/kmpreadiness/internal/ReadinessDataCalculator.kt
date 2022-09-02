@@ -9,12 +9,9 @@ import com.handstandsam.kmpreadiness.internal.models.ReadyReasonType
 import com.handstandsam.kmpreadiness.internal.models.Reason
 import com.handstandsam.kmpreadiness.internal.util.FileUtil
 import kotlinx.coroutines.runBlocking
-import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.plugins.JavaPluginExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinMultiplatformPlugin
 
 internal class ReadinessDataCalculator(private val target: Project) {
 
@@ -89,6 +86,13 @@ internal class ReadinessDataCalculator(private val target: Project) {
                 )
             }
 
+            if (gradlePlugins.androidLibrary) {
+                reasons.addNotReadyReason(NotReadyReasonType.IsAndroidLibrary)
+            }
+            if (gradlePlugins.androidApplication) {
+                reasons.addNotReadyReason(NotReadyReasonType.IsAndroidApplication)
+            }
+
             if (readinessData.sourceSets.hasOnlyKotlinFiles) {
                 reasons.addReadyReason(ReadyReasonType.HasOnlyKotlinFiles)
             } else {
@@ -103,8 +107,8 @@ internal class ReadinessDataCalculator(private val target: Project) {
             }
 
             if (readinessData.sourceSets.javaBaseReferences.isNotEmpty()) {
-                reasons.addNotReadyReason(NotReadyReasonType.UsesJdkImports, buildString {
-                    appendLine("JDK Base Library Usages")
+                reasons.addNotReadyReason(NotReadyReasonType.UsesJavaBaseImports, buildString {
+                    appendLine("Java Base Library Usages")
                     readinessData.sourceSets.javaBaseReferences.forEach { javaBaseUsagesInFile: JavaBaseUsagesInFile ->
                         javaBaseUsagesInFile.references.forEach { jdkReference ->
                             appendLine(" * ${jdkReference.lineContent}")
@@ -128,12 +132,6 @@ internal class ReadinessDataCalculator(private val target: Project) {
                         appendLine(" * $plugin")
                     }
                 })
-                if (gradlePlugins.androidLibrary) {
-                    reasons.addNotReadyReason(NotReadyReasonType.IsAndroidLibrary)
-                }
-                if (gradlePlugins.androidApplication) {
-                    reasons.addNotReadyReason(NotReadyReasonType.IsAndroidApplication)
-                }
             }
 
         }

@@ -38,8 +38,9 @@ internal data class SourceSetSearcherResult(
 
     fun findFilesEndingWith(suffix: String): List<String> {
         val files = mutableListOf<String>()
-        sourceSetToFiles.forEach { entry ->
-            entry.value.filter { it.endsWith(suffix) }
+        sourceSetToFiles.keys.forEach { sourceSet:String ->
+            val filesInSourceSet = sourceSetToFiles[sourceSet]!!
+            filesInSourceSet.filter { it.endsWith(suffix) }
                 .forEach { file ->
                     files.add(file)
                 }
@@ -49,27 +50,7 @@ internal data class SourceSetSearcherResult(
 
     val javaFiles: List<String> = findFilesEndingWith(".java")
 
-    val kotlinFiles: List<String> = findFilesEndingWith(".kt")
-
     val hasOnlyKotlinFiles: Boolean = javaFiles.isEmpty()
-
-    override fun toString(): String {
-        return table {
-            header {
-                row("SourceSet", "Files")
-            }
-            body {
-                sourceSetToFiles.keys.forEach { sourceSetName: String ->
-                    val files = sourceSetToFiles[sourceSetName]!!
-                    row(sourceSetName, buildString {
-                        files.forEach {
-                            appendLine("* $it")
-                        }
-                    })
-                }
-            }
-        }.toString()
-    }
 }
 
 internal class SourceSetSearcher {
@@ -116,15 +97,6 @@ internal class SourceSetSearcher {
                 .forEach { sourceSet ->
                     val matchingFiles = walkSourceDirectorySet(sourceSet.kotlin, "")
                     sourceSetToFiles["kotlin-${sourceSet.name}"] = matchingFiles.map { it.toString() }
-                }
-        }
-
-        project.extensions.findByType(JavaPluginExtension::class.java)?.apply {
-            sourceSets
-                .filter { !it.name.toLowerCase().contains("test") }
-                .forEach { sourceSet ->
-                    val matchingFiles = walkSourceDirectorySet(sourceSet.java, "")
-                    sourceSetToFiles["java-${sourceSet.name}"] = matchingFiles.map { it.toString() }
                 }
         }
 
