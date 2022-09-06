@@ -1,7 +1,7 @@
 # KMP Readiness IS 🚧 UNDER DEVELOPMENT 🚧
-[![LICENSE](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/handstandsam/kmp-readiness/blob/main/LICENSE)
-[![Latest Snapshot](https://img.shields.io/badge/dynamic/xml?url=https://s01.oss.sonatype.org/content/repositories/snapshots/com/handstandsam/kmp-readiness/kmp-readiness/maven-metadata.xml&label=Latest%20Snapshot&color=orange&query=.//versioning/latest)](https://s01.oss.sonatype.org/content/repositories/snapshots/com/handstandsam/kmp-readiness/com.handstandsam.kmp-readiness.gradle.plugin/)
-[![CI](https://github.com/handstandsam/kmp-readiness/workflows/CI/badge.svg)](https://github.com/handstandsam/kmp-readiness/actions?query=branch%3Amain)
+[![LICENSE](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/handstandsam/kmp-ready/blob/main/LICENSE)
+[![Latest Snapshot](https://img.shields.io/badge/dynamic/xml?url=https://s01.oss.sonatype.org/content/repositories/snapshots/com/handstandsam/kmp-ready/kmp-ready/maven-metadata.xml&label=Latest%20Snapshot&color=orange&query=.//versioning/latest)](https://s01.oss.sonatype.org/content/repositories/snapshots/com/handstandsam/kmp-ready/com.handstandsam.kmp-ready.gradle.plugin/)
+[![CI](https://github.com/handstandsam/kmp-ready/workflows/CI/badge.svg)](https://github.com/handstandsam/kmp-ready/actions?query=branch%3Amain)
 
 
 # Decisioning Logic
@@ -23,7 +23,7 @@ Search for transitive artifacts that are not multiplatform compatible
 * NOTE: These results would be cached, the same way dependencies are today.
 * NOTE: We could traverse local module dependencies, and check theirs as well if deemed important.  
 ### Is this an Android Library Module?
-This tool works on `kotlin("jvm")` modules.  If you are looking to move Android Libraries to Kotlin Multiplatform, the [dependency-analysis-android-gradle-plugin](https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin) will help give you advice on which modules can become `kotlin("jvm")` modules.  After that, come back and use `kmp-readiness`.
+This tool works on `kotlin("jvm")` modules.  If you are looking to move Android Libraries to Kotlin Multiplatform, the [dependency-analysis-android-gradle-plugin](https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin) will help give you advice on which modules can become `kotlin("jvm")` modules.  After that, come back and use `kmp-ready`.
 
 
 # `kmpReadiness` Gradle Task
@@ -129,6 +129,6 @@ pluginManagement {
 Add the Plugin on your project's `build.gradle`
 ```kotlin
 plugins {
-    id("com.handstandsam.kmp-readiness") version "0.1.0-SNAPSHOT"
+    id("com.handstandsam.kmp-ready") version "0.1.0-SNAPSHOT"
 }
 ```

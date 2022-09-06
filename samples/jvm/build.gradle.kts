@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 plugins {
   kotlin("jvm")
-  id("com.handstandsam.kmp-readiness")
+  id("com.handstandsam.kmp-ready")
 }
 
 dependencies {
