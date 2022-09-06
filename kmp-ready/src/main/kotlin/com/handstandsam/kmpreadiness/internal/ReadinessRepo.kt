@@ -7,7 +7,7 @@ import java.io.File
 
 internal class ReadinessRepo(tempDir: File) {
 
-    private val cacheFile = File(tempDir, "kmp-readiness-cache.json").apply {
+    private val cacheFile = File(tempDir, "kmp-ready-cache.json").apply {
         if (!exists()) {
             createNewFile()
         }

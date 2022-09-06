@@ -1,7 +1,7 @@
 Releasing
 =========
 
-1. Change the version in `kmp-readiness/gradle.properties` to a non-SNAPSHOT version.
+1. Change the version in `kmp-ready/gradle.properties` to a non-SNAPSHOT version.
 2. Update the `README.md` to reflect the new version number.
 3. Update the `CHANGELOG.md` for the impending release.
 4. `git commit -am "Release X.Y.Z."` (where X.Y.Z is the new version)

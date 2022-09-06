@@ -6,7 +6,7 @@ buildscript {
     }
     dependencies {
         classpath("com.handstandsam.kmp4free:kmp4free:0.1.0")
-        classpath("com.handstandsam.kmp-readiness:kmp-readiness")
+        classpath("com.handstandsam.kmp-ready:kmp-ready")
         classpath(libs.android.gradle.plugin)
     }
 }
@@ -28,7 +28,7 @@ dependencyGuard {
     configuration("classpath") {
         baselineMap = {
             def str = it
-            if (str.startsWith("com.handstandsam.kmp-readiness:kmp-readiness")) {
+            if (str.startsWith("com.handstandsam.kmp-ready:kmp-ready")) {
                 null
             } else {
                 str

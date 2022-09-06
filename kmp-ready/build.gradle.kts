@@ -52,8 +52,8 @@ kotlin {
 
 gradlePlugin {
     plugins {
-        plugins.create("kmp-readiness") {
-            id = "com.handstandsam.kmp-readiness"
+        plugins.create("kmp-ready") {
+            id = "com.handstandsam.kmp-ready"
             implementationClass = "com.handstandsam.kmpreadiness.KmpReadinessPlugin"
         }
     }
@@ -65,19 +65,18 @@ mavenPublish {
 
 dependencies {
     compileOnly(gradleApi())
+
     implementation(project(":kmp-ready-common"))
     implementation(libs.kotlin.gradle.plugin)
     implementation(libs.android.gradle.plugin)
-
     implementation(libs.picnic)
     implementation(libs.kotlin.tooling.metadata)
-
-    implementation(libs.okhttp)
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlin.coroutines)
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)
+
     testImplementation(libs.kotlin.test.common)
     testImplementation(libs.truth)
 }

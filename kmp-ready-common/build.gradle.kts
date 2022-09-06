@@ -75,3 +75,7 @@ java {
 tasks.withType<JavaCompile>().configureEach {
     options.release.set(8)
 }
+
+mavenPublish {
+    sonatypeHost = com.vanniktech.maven.publish.SonatypeHost.S01
+}

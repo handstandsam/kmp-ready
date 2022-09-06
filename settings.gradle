@@ -11,7 +11,7 @@ plugins {
     id "com.gradle.enterprise" version "3.10"
 }
 
-rootProject.name = "kmp-readiness-root"
+rootProject.name = "kmp-ready-root"
 
 include ':samples:android_app'
 include ':samples:android_lib'
@@ -19,11 +19,10 @@ include ':samples:jvm'
 include ':samples:jvm_kmp4free'
 include ':samples:multiplatform'
 include ':samples:multiplatform_kmp4free'
-//include ':kmp-ready-common'
 
 // Use Source
-includeBuild('kmp-readiness') {
+includeBuild('kmp-ready') {
     dependencySubstitution {
-        substitute module('com.handstandsam.kmp-readiness:kmp-readiness') using project(':')
+        substitute module('com.handstandsam.kmp-ready:kmp-ready') using project(':')
     }
 }

@@ -10,7 +10,7 @@ internal object FileUtil {
         return project.layout
             .buildDirectory
             .get()
-            .dir("tmp/kmp-readiness")
+            .dir("tmp/kmp-ready")
             .asFile
             .apply {
                 if (!exists()) {
