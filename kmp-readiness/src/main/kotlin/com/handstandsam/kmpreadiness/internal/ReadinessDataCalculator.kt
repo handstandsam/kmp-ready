@@ -10,6 +10,7 @@ import com.handstandsam.kmpreadiness.internal.models.Reason
 import com.handstandsam.kmpreadiness.internal.util.FileUtil
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.Project
+import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
@@ -31,7 +32,19 @@ internal class ReadinessDataCalculator(private val target: Project) {
         )
         val sourceSetSearcherResult = SourceSetSearcher().searchSourceSets(target)
         val kmpDependenciesAnalysisResult = runBlocking {
-            DependenciesReadinessProcessor(FileUtil.projectDirOutputFile(target)).process(computedDependencies)
+
+            val mavenRepoUrls = mutableListOf<String>()
+            target.rootProject.repositories
+                .filterIsInstance<MavenArtifactRepository>()
+                .forEach {
+                    val url = it.url.toURL().toString()
+                    mavenRepoUrls.add(url)
+                }
+
+            DependenciesReadinessProcessor(FileUtil.projectDirOutputFile(target)).process(
+                mavenRepoUrls,
+                computedDependencies
+            )
         }
 
         val kmpReadinessData = ReadinessData(
@@ -87,9 +100,9 @@ internal class ReadinessDataCalculator(private val target: Project) {
 
             if (gradlePlugins.androidLibrary) {
                 reasons.addNotReadyReason(NotReadyReasonType.IsAndroidLibrary)
-            }else             if (gradlePlugins.androidApplication) {
+            } else if (gradlePlugins.androidApplication) {
                 reasons.addNotReadyReason(NotReadyReasonType.IsAndroidApplication)
-            }else{
+            } else {
 
             }
 

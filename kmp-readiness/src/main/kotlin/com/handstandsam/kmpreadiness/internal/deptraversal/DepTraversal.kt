@@ -8,15 +8,13 @@ internal object DepTraversal {
     fun getGavsForProject(target: Project): List<Gav> {
         val gavsToProcess = mutableListOf<Gav>()
 
-
-        // TODO - Only Supports Projects with the JavaPlugin
+        // TODO - Only Supports Projects with runtimeClasspath as a configuration
         target.configurations.filter { it.name == JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME }
             .forEach { configuration ->
-                println("* Configuration: ${configuration.name}")
                 configuration.incoming.dependencies.forEach { incomingDependency ->
-                    println("** Artifact: ${incomingDependency.name} ${incomingDependency::class.java}")
                     when (incomingDependency) {
                         is org.gradle.api.artifacts.ProjectDependency -> {
+                            // TODO Handle Local Modules/Projects
                         }
 
                         is org.gradle.api.artifacts.ExternalDependency -> {
@@ -24,7 +22,7 @@ internal object DepTraversal {
                                 Gav(
                                     group = incomingDependency.group!!,
                                     artifact = incomingDependency.name,
-                                    version = incomingDependency.version
+                                    version = incomingDependency.version!!
                                 )
                             )
                         }
@@ -34,7 +32,6 @@ internal object DepTraversal {
 
                 }
             }
-        println("depsToProcess $gavsToProcess")
         return gavsToProcess
     }
 }

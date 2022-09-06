@@ -20,7 +20,7 @@ internal class DependenciesReadinessProcessor(private val tempDir: File) {
         Gav(
             group = tokens[0],
             artifact = tokens[1],
-            version = null
+            version = ""
         )
     }
 
@@ -31,35 +31,79 @@ internal class DependenciesReadinessProcessor(private val tempDir: File) {
         return excludedArtifacts.any { it.group == gav.group && it.artifact == gav.artifact }
     }
 
-    suspend fun process(depsToProcess: List<Gav>): KmpDependenciesAnalysisResult {
-        val readinessRepo = ReadinessRepo(tempDir)
-        val compatible = mutableListOf<Gav>()
-        val incompatible = mutableListOf<Gav>()
-        depsToProcess.forEach { gav ->
+    private suspend fun computeReadinessFromMavenRepos(mavenRepoUrls: List<String>, gav: Gav): KmpReadyResult {
+        val attemptedUrls = mutableListOf<String>()
+        mavenRepoUrls.forEach { mavenRepoUrl ->
+            val kotlinToolingMetadataUrlString = SearchRemote.getUrlForKotlinToolingMetadata(mavenRepoUrl, gav)
+            val result = SearchRemote().searchForInRepo(
+                kotlinToolingMetadataUrlString = kotlinToolingMetadataUrlString,
+                gav = gav
+            )
+            when (result) {
+                is SearchRemote.KotlinToolingMetadataResult.Success -> {
+                    return KmpReadyResult.Allowed.FromRemote(
+                        gav = gav,
+                        metadataUrl = kotlinToolingMetadataUrlString
+                    )
+                }
 
+                is SearchRemote.KotlinToolingMetadataResult.NotFound -> {
+                    attemptedUrls.add(kotlinToolingMetadataUrlString)
+                }
+            }
+        }
+        return KmpReadyResult.NotAllowed.FromRemote(
+            gav = gav,
+            attemptedUrls = attemptedUrls
+        )
+    }
+
+    suspend fun process(mavenRepoUrls: List<String>, depsToProcess: List<Gav>): KmpDependenciesAnalysisResult {
+        val readinessRepo = ReadinessRepo(tempDir)
+        depsToProcess.forEach { gav ->
             if (isExcluded(gav)) {
-                readinessRepo.add(KmpReadyResult(gav, true))
-                compatible.add(gav)
+                readinessRepo.add(gav, KmpReadyResult.Allowed.Excluded(gav))
             } else {
-                if (readinessRepo.readyCache.contains(gav)) {
-                    compatible.add(gav)
-                } else if (readinessRepo.notReadyCache.contains(gav)) {
-                    incompatible.add(gav)
+                val fromReadyCache = readinessRepo.readyCache.firstOrNull { it.gav == gav }
+                val fromNotReadyCache = readinessRepo.notReadyCache.firstOrNull { it.gav == gav }
+                if (fromReadyCache != null) {
+                    readinessRepo.add(gav, fromReadyCache.kmpReadyResult)
+                } else if (fromNotReadyCache != null) {
+                    readinessRepo.add(gav, fromNotReadyCache.kmpReadyResult)
                 } else {
-                    val kmpReadyResult = MavenSearchRemote().searchFor(gav)
-                    readinessRepo.add(kmpReadyResult)
-                    if (kmpReadyResult.isReady) {
-                        compatible.add(gav)
-                    } else {
-                        incompatible.add(gav)
+                    val kmpReadyResult: KmpReadyResult = computeReadinessFromMavenRepos(mavenRepoUrls, gav)
+                    when (kmpReadyResult) {
+                        is KmpReadyResult.Allowed -> {
+                            readinessRepo.add(gav, kmpReadyResult)
+                            // when (kmpReadyResult) {
+                            //     is KmpReadyResult.Allowed.Excluded -> TODO("Shouldn't Happen $kmpReadyResult")
+                            //     is KmpReadyResult.Allowed.FromCache -> TODO("Shouldn't Happen $kmpReadyResult")
+                            //     is KmpReadyResult.Allowed.FromRemote -> {
+                            //         kmpReadyResult
+                            //     }
+                            // }
+                        }
+
+                        is KmpReadyResult.NotAllowed -> {
+                            readinessRepo.add(gav, kmpReadyResult)
+                            // when (kmpReadyResult) {
+                            //     is KmpReadyResult.NotAllowed.FromCache -> TODO("Shouldn't Happen $kmpReadyResult")
+                            //     is KmpReadyResult.NotAllowed.FromRemote -> {
+                            //     }
+                            // }
+                        }
                     }
                 }
             }
             readinessRepo.write()
         }
         return KmpDependenciesAnalysisResult(
-            compatible = compatible.map { it.id },
-            incompatible = incompatible.map { it.id },
+            compatible = readinessRepo.readyCache
+                .map { it.kmpReadyResult }
+                .filterIsInstance<KmpReadyResult.Allowed>(),
+            incompatible = readinessRepo.notReadyCache
+                .map { it.kmpReadyResult }
+                .filterIsInstance<KmpReadyResult.NotAllowed>(),
             all = depsToProcess.map { it.id }
         )
     }
