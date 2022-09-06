@@ -3,7 +3,7 @@ package com.handstandsam.kmpready.internal.models
 import kotlinx.serialization.Serializable
 
 @Serializable
-internal data class KmpDependenciesAnalysisResult(
+public data class KmpDependenciesAnalysisResult(
     val all: List<String>,
     val compatible: List<KmpReadyResult.Allowed>,
     val incompatible: List<KmpReadyResult.NotAllowed>,

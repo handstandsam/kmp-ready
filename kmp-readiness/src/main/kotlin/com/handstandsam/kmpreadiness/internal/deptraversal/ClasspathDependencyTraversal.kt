@@ -1,10 +1,11 @@
 package com.handstandsam.kmpreadiness.internal.deptraversal
 
-import com.handstandsam.kmpreadiness.internal.models.Gav
+import com.handstandsam.kmpready.internal.models.Gav
+
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPlugin
 
-internal object DepTraversal {
+internal object ClasspathDependencyTraversal {
     fun getGavsForProject(target: Project): List<Gav> {
         val gavsToProcess = mutableListOf<Gav>()
 

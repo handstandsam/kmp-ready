@@ -1,6 +1,6 @@
 package com.handstandsam.kmpreadiness.internal
 
-import com.handstandsam.kmpreadiness.internal.models.Reason
+import com.handstandsam.kmpready.internal.models.Reason
 
 internal data class ReadinessResult(val reasons: List<Reason>, val readinessData: ReadinessData) {
     val readyReasons: List<Reason.ReadyReason> =

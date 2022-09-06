@@ -1,11 +1,16 @@
 package com.handstandsam.kmpreadiness.internal
 
+import com.handstandsam.kmpready.internal.SearchRemote
+import com.handstandsam.kmpready.internal.models.Gav
+import com.handstandsam.kmpready.internal.models.KmpDependenciesAnalysisResult
+import com.handstandsam.kmpready.internal.models.KmpReadyResult
+import com.handstandsam.kmpready.internal.models.KotlinToolingMetadataResult
 import java.io.File
-import com.handstandsam.kmpreadiness.internal.models.Gav
-import com.handstandsam.kmpreadiness.internal.models.KmpDependenciesAnalysisResult
-import com.handstandsam.kmpreadiness.internal.models.KmpReadyResult
 
-internal class DependenciesReadinessProcessor(private val tempDir: File) {
+internal class DependenciesReadinessProcessor(
+    private val tempDir: File,
+    private val searchRemote: SearchRemote = SearchRemote()
+) {
 
     val excludedArtifacts = listOf(
         "org.jetbrains.kotlin:kotlin-stdlib",
@@ -27,7 +32,7 @@ internal class DependenciesReadinessProcessor(private val tempDir: File) {
     /**
      * Excluding by group + artifact
      */
-    fun isExcluded(gav: Gav): Boolean {
+    internal fun isExcluded(gav: Gav): Boolean {
         return excludedArtifacts.any { it.group == gav.group && it.artifact == gav.artifact }
     }
 
@@ -35,19 +40,20 @@ internal class DependenciesReadinessProcessor(private val tempDir: File) {
         val attemptedUrls = mutableListOf<String>()
         mavenRepoUrls.forEach { mavenRepoUrl ->
             val kotlinToolingMetadataUrlString = SearchRemote.getUrlForKotlinToolingMetadata(mavenRepoUrl, gav)
-            val result = SearchRemote().searchForInRepo(
+            val result = searchRemote.searchForInRepo(
                 kotlinToolingMetadataUrlString = kotlinToolingMetadataUrlString,
                 gav = gav
             )
             when (result) {
-                is SearchRemote.KotlinToolingMetadataResult.Success -> {
+                is KotlinToolingMetadataResult.Success -> {
                     return KmpReadyResult.Allowed.FromRemote(
                         gav = gav,
-                        metadataUrl = kotlinToolingMetadataUrlString
+                        metadataUrl = kotlinToolingMetadataUrlString,
+                        kotlinToolingMetadataJson = result.json
                     )
                 }
 
-                is SearchRemote.KotlinToolingMetadataResult.NotFound -> {
+                is KotlinToolingMetadataResult.NotFound -> {
                     attemptedUrls.add(kotlinToolingMetadataUrlString)
                 }
             }

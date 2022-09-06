@@ -11,22 +11,26 @@ kotlin {
     jvm()
 
     sourceSets {
-        maybeCreate("commonMain").apply {
+        val commonMain by getting {
             dependencies {
-
-                implementation(libs.kotlin.gradle.plugin)
+                api(libs.ktor.client.core)
+                api(libs.kotlin.coroutines)
                 implementation(libs.kotlinx.serialization.core)
                 implementation(libs.kotlinx.serialization.json)
-                implementation(libs.kotlin.coroutines)
             }
         }
-        maybeCreate("commonTest").apply {
+        val commonTest by getting {
             dependencies {
                 implementation(libs.kotlin.test.common)
                 implementation(libs.kotlin.test.annotations.common)
             }
         }
-        maybeCreate("jvmTest").apply {
+
+        val jvmMain by getting {
+            dependsOn(commonMain)
+        }
+
+        val jvmTest by getting {
             dependencies {
                 implementation(libs.truth)
                 implementation(libs.kotlin.test.junit5)

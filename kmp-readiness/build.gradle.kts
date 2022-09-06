@@ -1,6 +1,7 @@
 // https://youtrack.jetbrains.com/issue/KTIJ-19369
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
+    kotlin("jvm") version "1.7.10"
     `kotlin-dsl`
     alias(libs.plugins.dokka)
     alias(libs.plugins.mavenPublish)
@@ -75,6 +76,8 @@ dependencies {
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlin.coroutines)
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.okhttp)
     testImplementation(libs.kotlin.test.common)
     testImplementation(libs.truth)
 }

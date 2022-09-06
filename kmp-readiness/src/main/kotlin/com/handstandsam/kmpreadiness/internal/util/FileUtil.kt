@@ -4,7 +4,6 @@ import org.gradle.api.Project
 import java.io.File
 
 internal object FileUtil {
-
     fun projectDirOutputFile(
         project: Project,
     ): File {

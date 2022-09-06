@@ -1,7 +1,7 @@
 package com.handstandsam.kmpreadiness.internal
 
-import com.handstandsam.kmpreadiness.internal.models.Gav
-import com.handstandsam.kmpreadiness.internal.models.KmpReadyResult
+import com.handstandsam.kmpready.internal.JsonSerializer
+import com.handstandsam.kmpready.internal.models.KmpReadyResult
 import kotlinx.serialization.Serializable
 import java.io.File
 

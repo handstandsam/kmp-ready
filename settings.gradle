@@ -19,7 +19,7 @@ include ':samples:jvm'
 include ':samples:jvm_kmp4free'
 include ':samples:multiplatform'
 include ':samples:multiplatform_kmp4free'
-include ':kmp-ready-common'
+//include ':kmp-ready-common'
 
 // Use Source
 includeBuild('kmp-readiness') {
