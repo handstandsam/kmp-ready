@@ -2,65 +2,52 @@ package com.handstandsam.kmpreadiness.internal
 
 import com.handstandsam.kmpreadiness.internal.models.Gav
 import com.handstandsam.kmpreadiness.internal.models.KmpReadyResult
+import kotlinx.serialization.Serializable
 import java.io.File
 
 internal class ReadinessRepo(tempDir: File) {
 
-    val notReadyCacheFile = File(tempDir, "not-ready.txt").apply {
+    private val cacheFile = File(tempDir, "kmp-readiness-cache.json").apply {
         if (!exists()) {
             createNewFile()
-        }
-    }
-    val notReadyCache = mutableListOf<ResultDataPair>().also { notReady ->
-        notReadyCacheFile.readText().lines().map { gavString ->
-            Gav.fromString(gavString)?.let { notReady.add(ResultDataPair(it, KmpReadyResult.NotAllowed.FromCache(it))) }
         }
     }
 
-    val readyCacheFile = File(tempDir, "ready.txt").apply {
-        if (!exists()) {
-            createNewFile()
-        }
-    }
-    val readyCache = mutableListOf<ResultDataPair>().also { ready ->
-        readyCacheFile.readText().lines().map { gavString ->
-            Gav.fromString(gavString)?.let { ready.add(ResultDataPair(it, KmpReadyResult.Allowed.FromCache(it))) }
+    @Serializable
+    data class CachedContents(
+        val ready: MutableMap<String, KmpReadyResult.Allowed>,
+        val notReady: MutableMap<String, KmpReadyResult.NotAllowed>
+    )
+
+    val cache: CachedContents = run {
+        val fileContents = cacheFile.readText()
+        try {
+            JsonSerializer.json.decodeFromString(CachedContents.serializer(), fileContents)
+        } catch (e: Exception) {
+            CachedContents(
+                ready = mutableMapOf(),
+                notReady = mutableMapOf()
+            )
         }
     }
 
     fun write() {
-        readyCacheFile
+        val json = JsonSerializer.json.encodeToString(CachedContents.serializer(), cache)
+        cacheFile
             .writeText(
-                readyCache
-                    .map { it.gav.id }
-                    .sorted()
-                    .distinct()
-                    .joinToString("\n")
+                json
             )
-        notReadyCacheFile
-            .writeText(
-                notReadyCache
-                    .map { it.gav.id }
-                    .distinct()
-                    .sorted()
-                    .joinToString("\n"))
     }
 
-    data class ResultDataPair(val gav: Gav, val kmpReadyResult: KmpReadyResult)
-
-    fun add(gav: Gav, kmpReadyResult: KmpReadyResult) {
+    fun add(kmpReadyResult: KmpReadyResult) {
         when (kmpReadyResult) {
             is KmpReadyResult.Allowed -> {
-                readyCache.add(ResultDataPair(gav, kmpReadyResult))
+                cache.ready[kmpReadyResult.gav.id] = kmpReadyResult
             }
 
             is KmpReadyResult.NotAllowed -> {
-                notReadyCache.add(ResultDataPair(gav, kmpReadyResult))
+                cache.notReady[kmpReadyResult.gav.id] = kmpReadyResult
             }
         }
-    }
-
-    fun hasBeenChecked(gav: Gav): Boolean {
-        return readyCache.any { it.gav == gav } || notReadyCache.any { it.gav == gav }
     }
 }

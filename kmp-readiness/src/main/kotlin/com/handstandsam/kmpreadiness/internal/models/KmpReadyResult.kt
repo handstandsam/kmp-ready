@@ -2,41 +2,32 @@ package com.handstandsam.kmpreadiness.internal.models
 
 import kotlinx.serialization.Serializable
 
+internal interface HasGav {
+    val gav: Gav
+}
+
 @Serializable
-internal sealed class KmpReadyResult() {
+internal sealed class KmpReadyResult {
     @Serializable
 
-    sealed class Allowed : KmpReadyResult() {
+    sealed class Allowed : HasGav, KmpReadyResult() {
 
         @Serializable
         data class FromRemote(
-            val gav: Gav,
+            override val gav: Gav,
             val metadataUrl: String,
         ) : Allowed()
 
         @Serializable
         data class Excluded(
-            val gav: Gav,
-        ) : Allowed()
-
-        @Serializable
-        data class FromCache(
-            val gav: Gav,
+            override val gav: Gav,
         ) : Allowed()
     }
 
     @Serializable
-    sealed class NotAllowed : KmpReadyResult() {
-        @Serializable
-        data class FromCache(
-            val gav: Gav,
-        ) : NotAllowed()
-
-        @Serializable
-        data class FromRemote(
-            val gav: Gav,
-            val attemptedUrls: List<String> = listOf(),
-        ) : NotAllowed()
-    }
+    data class NotAllowed(
+        override val gav: Gav,
+        val attemptedUrls: List<String> = listOf(),
+    ) : HasGav, KmpReadyResult()
 }
 
