@@ -5,6 +5,3 @@ dependencyResolutionManagement {
         }
     }
 }
-
-include(":kmp-ready-common")
-project(":kmp-ready-common").projectDir = file("../kmp-ready-common")

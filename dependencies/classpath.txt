@@ -157,8 +157,8 @@ org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:1.7.10
 org.jetbrains.kotlin:kotlin-scripting-compiler-impl-embeddable:1.7.10
 org.jetbrains.kotlin:kotlin-scripting-jvm:1.7.10
 org.jetbrains.kotlin:kotlin-stdlib-common:1.7.10
-org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.7.10
-org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.10
+org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.21
+org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.21
 org.jetbrains.kotlin:kotlin-stdlib:1.7.10
 org.jetbrains.kotlin:kotlin-tooling-core:1.7.10
 org.jetbrains.kotlin:kotlin-tooling-metadata:1.7.10

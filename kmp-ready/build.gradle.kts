@@ -48,6 +48,9 @@ tasks.withType<JavaCompile>().configureEach {
 
 kotlin {
     explicitApi()
+    java.sourceSets["main"].java {
+        srcDir("../kmp-ready-common/src/commonMain/kotlin")
+    }
 }
 
 gradlePlugin {
@@ -66,7 +69,6 @@ mavenPublish {
 dependencies {
     compileOnly(gradleApi())
 
-    implementation(project(":kmp-ready-common"))
     implementation(libs.kotlin.gradle.plugin)
     implementation(libs.android.gradle.plugin)
     implementation(libs.picnic)
