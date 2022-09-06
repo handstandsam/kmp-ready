@@ -20,7 +20,6 @@ dependencies {
     implementation(project(":samples:jvm"))
     implementation(project(":samples:jvm_kmp4free"))
     implementation(project(":samples:multiplatform"))
-    implementation(project(":samples:multiplatform_kmp4free"))
 }
 
 dependencyGuard {
