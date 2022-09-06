@@ -2,7 +2,7 @@ package com.handstandsam.kmpready.internal.models
 
 import kotlinx.serialization.json.JsonObject
 
-public sealed class KotlinToolingMetadataResult {
-    class Success(val url: String, val json: JsonObject) : KotlinToolingMetadataResult()
-    class NotFound() : KotlinToolingMetadataResult()
+internal sealed class KotlinToolingMetadataResult {
+    internal class Success(internal val url: String, internal val json: JsonObject) : KotlinToolingMetadataResult()
+    internal class NotFound() : KotlinToolingMetadataResult()
 }
