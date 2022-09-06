@@ -4,7 +4,6 @@ import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.LibraryExtension
 import com.handstandsam.kmpreadiness.internal.deptraversal.DepTraversal
 import com.handstandsam.kmpreadiness.internal.models.NotReadyReasonType
-import com.handstandsam.kmpreadiness.internal.models.ReadinessResult
 import com.handstandsam.kmpreadiness.internal.models.ReadyReasonType
 import com.handstandsam.kmpreadiness.internal.models.Reason
 import com.handstandsam.kmpreadiness.internal.util.FileUtil

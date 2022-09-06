@@ -1,9 +1,9 @@
 package com.handstandsam.kmpreadiness.internal
 
+import java.io.File
 import com.handstandsam.kmpreadiness.internal.models.Gav
 import com.handstandsam.kmpreadiness.internal.models.KmpDependenciesAnalysisResult
 import com.handstandsam.kmpreadiness.internal.models.KmpReadyResult
-import java.io.File
 
 internal class DependenciesReadinessProcessor(private val tempDir: File) {
 

@@ -1,7 +1,6 @@
 package com.handstandsam.kmpreadiness.internal
 
 import com.handstandsam.kmpreadiness.internal.Tasks.declareCompatibilities
-import com.handstandsam.kmpreadiness.internal.models.ReadinessResult
 import com.jakewharton.picnic.table
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project

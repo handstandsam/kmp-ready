@@ -13,13 +13,14 @@ plugins {
 
 rootProject.name = "kmp-readiness-root"
 
-
 include ':samples:android_app'
 include ':samples:android_lib'
 include ':samples:jvm'
 include ':samples:jvm_kmp4free'
 include ':samples:multiplatform'
 include ':samples:multiplatform_kmp4free'
+include ':kmp-ready-common'
+
 // Use Source
 includeBuild('kmp-readiness') {
     dependencySubstitution {

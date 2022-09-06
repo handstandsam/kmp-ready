@@ -6,11 +6,5 @@ dependencyResolutionManagement {
     }
 }
 
-// pluginManagement {
-//     repositories {
-//         mavenCentral()
-//         google()
-//         gradlePluginPortal()
-//         maven { setUrl("https://s01.oss.sonatype.org/content/repositories/snapshots/") }
-//     }
-// }
+include(":kmp-ready-common")
+project(":kmp-ready-common").projectDir = file("../kmp-ready-common")
