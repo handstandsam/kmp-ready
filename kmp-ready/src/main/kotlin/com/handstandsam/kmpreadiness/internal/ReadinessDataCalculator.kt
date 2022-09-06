@@ -27,6 +27,9 @@ internal class ReadinessDataCalculator(private val target: Project) {
             androidApplication = target.hasExtension(ApplicationExtension::class.java),
             kotlinJvm = target.hasExtension(KotlinJvmProjectExtension::class.java),
             plugins = target.plugins.map { it::class.java.name }
+                .filterNot { it.startsWith("org.gradle.api.plugins.") }
+                .filterNot { it.startsWith("org.gradle.buildinit.plugins.") }
+                .filterNot { it.startsWith("org.gradle.language.base.plugins.") }
                 .sortedBy { it }
         )
         val sourceSetSearcherResult = SourceSetSearcher().searchSourceSets(target)

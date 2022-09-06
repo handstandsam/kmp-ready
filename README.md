@@ -1,4 +1,4 @@
-# KMP Readiness IS 🚧 UNDER DEVELOPMENT 🚧
+# KMP Ready IS 🚧 UNDER DEVELOPMENT 🚧
 [![LICENSE](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/handstandsam/kmp-ready/blob/main/LICENSE)
 [![Latest Snapshot](https://img.shields.io/badge/dynamic/xml?url=https://s01.oss.sonatype.org/content/repositories/snapshots/com/handstandsam/kmp-ready/kmp-ready/maven-metadata.xml&label=Latest%20Snapshot&color=orange&query=.//versioning/latest)](https://s01.oss.sonatype.org/content/repositories/snapshots/com/handstandsam/kmp-ready/com.handstandsam.kmp-ready.gradle.plugin/)
 [![CI](https://github.com/handstandsam/kmp-ready/workflows/CI/badge.svg)](https://github.com/handstandsam/kmp-ready/actions?query=branch%3Amain)
@@ -26,13 +26,13 @@ Search for transitive artifacts that are not multiplatform compatible
 This tool works on `kotlin("jvm")` modules.  If you are looking to move Android Libraries to Kotlin Multiplatform, the [dependency-analysis-android-gradle-plugin](https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin) will help give you advice on which modules can become `kotlin("jvm")` modules.  After that, come back and use `kmp-ready`.
 
 
-# `kmpReadiness` Gradle Task
+# `kmpReady` Gradle Task
 Could be applied to a specific module or the root so that all modules are scanned.
 
-Run the `kmpReadiness` task and get a result like this:
+Run the `kmpReady` task and get a result like this:
 ```
 ┌─────────────────────────────────┬───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ Module                          │ KMP Readiness Result                                                                                                  │
+│ Module                          │ KMP Ready Result                                                                                                      │
 ├─────────────────────────────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
 │ :samples:android_app            │ Not KMP Ready                                                                                                         │
 │                                 │ ---                                                                                                                   │
@@ -46,6 +46,7 @@ Run the `kmpReadiness` task and get a result like this:
 │                                 │  * com.android.build.gradle.internal.plugins.AppPlugin                                                                │
 │                                 │  * com.android.build.gradle.internal.plugins.VersionCheckPlugin                                                       │
 │                                 │  * com.dropbox.gradle.plugins.dependencyguard.DependencyGuardPlugin                                                   │
+│                                 │  * org.gradle.kotlin.dsl.provider.plugins.KotlinScriptBasePlugin                                                      │
 │                                 │                                                                                                                       │
 │                                 │                                                                                                                       │
 ├─────────────────────────────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
@@ -64,6 +65,7 @@ Run the `kmpReadiness` task and get a result like this:
 │                                 │  * com.android.build.gradle.api.AndroidBasePlugin                                                                     │
 │                                 │  * com.android.build.gradle.internal.plugins.LibraryPlugin                                                            │
 │                                 │  * com.android.build.gradle.internal.plugins.VersionCheckPlugin                                                       │
+│                                 │  * org.gradle.kotlin.dsl.provider.plugins.KotlinScriptBasePlugin                                                      │
 │                                 │  * org.jetbrains.kotlin.gradle.plugin.KotlinAndroidPluginWrapper                                                      │
 │                                 │                                                                                                                       │
 │                                 │                                                                                                                       │
@@ -108,11 +110,10 @@ Run the `kmpReadiness` task and get a result like this:
 │                                 │                                                                                                                       │
 │                                 │                                                                                                                       │
 └─────────────────────────────────┴───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
-
 ```
 
 ## Info/Debug Logging
-Just pass use the info flag like `./gradlew kmpReadiness --info` when you run the Gradle task and all the information collected that is used for decisioning is printed.  Warning: This can be a TON of info on a large project.
+Just pass use the info flag like `./gradlew kmpReady --info` when you run the Gradle task and all the information collected that is used for decisioning is printed.  Warning: This can be a TON of info on a large project.
 
 
 ## Plugin Installation

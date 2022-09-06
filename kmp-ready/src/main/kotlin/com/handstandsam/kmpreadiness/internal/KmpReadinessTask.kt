@@ -9,11 +9,11 @@ import org.gradle.api.tasks.TaskAction
 internal abstract class KmpReadinessTask : DefaultTask() {
 
     public companion object {
-        public const val TASK_NAME: String = "kmpReadiness"
+        public const val TASK_NAME: String = "kmpReady"
     }
 
     init {
-        group = "KMP Readiness"
+        group = "KMP Ready"
         this.declareCompatibilities() // Does not support configuration cache
     }
 
@@ -62,7 +62,7 @@ internal abstract class KmpReadinessTask : DefaultTask() {
             header {
                 row {
                     cell("Module")
-                    cell("KMP Readiness Result")
+                    cell("KMP Ready Result")
                     if (isInfoLoggingEnabled) {
                         cell("Collected Data")
                     }

@@ -35,8 +35,8 @@ jobs:
       - name: Dependency Guard
         run: ./gradlew dependencyGuard --stacktrace
 
-      - name: API Check
-        run: ./gradlew apiCheck --stacktrace
+      - name: Binary Compatibility API Check
+        run: ./gradlew :kmp-ready:apiCheck --stacktrace
 
       - name: Assemble
         run: ./gradlew assemble --stacktrace
