@@ -12,6 +12,7 @@ kotlin = "1.7.10"
 kotlin_coroutines = "1.6.4"
 kotlinx_datetime = "0.3.2"
 kotlinx_serialization = "1.3.0" # Compatible with Kotlin 1.5 which we need as this is a Gradle Plugin
+ktor = "1.6.5"
 okhttp = "4.9.3"
 picnic = "0.6.0"
 truth = "1.1.3"
@@ -32,6 +33,8 @@ kotlin_coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", 
 kotlinx_datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx_datetime" }
 kotlinx_serialization_core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx_serialization" }
 kotlinx_serialization_json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx_serialization" }
+ktor_client_core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor_client_okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 picnic = { module = "com.jakewharton.picnic:picnic", version.ref = "picnic" }
 truth = { module = "com.google.truth:truth", version.ref = "truth" }

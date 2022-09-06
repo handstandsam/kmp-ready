@@ -1,5 +1,4 @@
 import com.handstandsam.kmpreadiness.internal.DependenciesReadinessProcessor
-import com.handstandsam.kmpreadiness.internal.models.Gav
 import kotlinx.coroutines.runBlocking
 import java.io.File
 

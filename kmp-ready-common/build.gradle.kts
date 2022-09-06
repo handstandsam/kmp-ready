@@ -1,13 +1,46 @@
 // https://youtrack.jetbrains.com/issue/KTIJ-19369
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    kotlin("jvm") version "1.7.10"
-    `kotlin-dsl`
+    kotlin("multiplatform")
     alias(libs.plugins.dokka)
     alias(libs.plugins.mavenPublish)
-    alias(libs.plugins.binaryCompatibilityValidator)
     kotlin("plugin.serialization") version "1.5.31"
 }
+
+kotlin {
+    jvm()
+
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                api(libs.ktor.client.core)
+                api(libs.kotlin.coroutines)
+                implementation(libs.kotlinx.serialization.core)
+                implementation(libs.kotlinx.serialization.json)
+            }
+        }
+        val commonTest by getting {
+            dependencies {
+                implementation(libs.kotlin.test.common)
+                implementation(libs.kotlin.test.annotations.common)
+            }
+        }
+
+        val jvmMain by getting {
+            dependsOn(commonMain)
+        }
+
+        val jvmTest by getting {
+            dependencies {
+                implementation(libs.truth)
+                implementation(libs.kotlin.test.junit5)
+            }
+        }
+    }
+}
+
+
+
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     kotlinOptions {
@@ -33,9 +66,6 @@ allprojects {
     }
 }
 
-val VERSION_NAME: String by project
-version = VERSION_NAME
-
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(11))
@@ -44,46 +74,4 @@ java {
 
 tasks.withType<JavaCompile>().configureEach {
     options.release.set(8)
-}
-
-kotlin {
-    explicitApi()
-}
-
-gradlePlugin {
-    plugins {
-        plugins.create("kmp-readiness") {
-            id = "com.handstandsam.kmp-readiness"
-            implementationClass = "com.handstandsam.kmpreadiness.KmpReadinessPlugin"
-        }
-    }
-}
-
-mavenPublish {
-    sonatypeHost = com.vanniktech.maven.publish.SonatypeHost.S01
-}
-
-dependencies {
-    compileOnly(gradleApi())
-    implementation(project(":kmp-ready-common"))
-    implementation(libs.kotlin.gradle.plugin)
-    implementation(libs.android.gradle.plugin)
-
-    implementation(libs.picnic)
-    implementation(libs.kotlin.tooling.metadata)
-
-    implementation(libs.okhttp)
-    implementation(libs.kotlinx.serialization.core)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.kotlin.coroutines)
-    implementation(libs.ktor.client.core)
-    implementation(libs.ktor.client.okhttp)
-    testImplementation(libs.kotlin.test.common)
-    testImplementation(libs.truth)
-}
-
-tasks.register("printVersionName") {
-    doLast {
-        println(VERSION_NAME)
-    }
 }

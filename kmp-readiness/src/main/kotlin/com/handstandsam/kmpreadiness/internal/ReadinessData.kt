@@ -1,6 +1,7 @@
 package com.handstandsam.kmpreadiness.internal
 
-import com.handstandsam.kmpreadiness.internal.models.KmpDependenciesAnalysisResult
+import com.handstandsam.kmpready.internal.JsonSerializer
+import com.handstandsam.kmpready.internal.models.KmpDependenciesAnalysisResult
 import kotlinx.serialization.Serializable
 
 @Serializable

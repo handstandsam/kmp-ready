@@ -2,12 +2,11 @@ package com.handstandsam.kmpreadiness.internal
 
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.LibraryExtension
-import com.handstandsam.kmpreadiness.internal.deptraversal.DepTraversal
-import com.handstandsam.kmpreadiness.internal.models.NotReadyReasonType
-import com.handstandsam.kmpreadiness.internal.models.ReadinessResult
-import com.handstandsam.kmpreadiness.internal.models.ReadyReasonType
-import com.handstandsam.kmpreadiness.internal.models.Reason
+import com.handstandsam.kmpreadiness.internal.deptraversal.ClasspathDependencyTraversal
 import com.handstandsam.kmpreadiness.internal.util.FileUtil
+import com.handstandsam.kmpready.internal.models.NotReadyReasonType
+import com.handstandsam.kmpready.internal.models.ReadyReasonType
+import com.handstandsam.kmpready.internal.models.Reason
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.Project
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
@@ -21,7 +20,7 @@ internal class ReadinessDataCalculator(private val target: Project) {
     }
 
     private fun computeReadinessData(): ReadinessData {
-        val computedDependencies = DepTraversal.getGavsForProject(target)
+        val computedDependencies = ClasspathDependencyTraversal.getGavsForProject(target)
         val appliedGradlePlugins = AppliedGradlePlugins(
             kotlinMultiplatform = target.hasExtension(KotlinMultiplatformExtension::class.java),
             androidLibrary = target.hasExtension(LibraryExtension::class.java),
@@ -32,7 +31,6 @@ internal class ReadinessDataCalculator(private val target: Project) {
         )
         val sourceSetSearcherResult = SourceSetSearcher().searchSourceSets(target)
         val kmpDependenciesAnalysisResult = runBlocking {
-
             val mavenRepoUrls = mutableListOf<String>()
             target.rootProject.repositories
                 .filterIsInstance<MavenArtifactRepository>()
@@ -61,7 +59,7 @@ internal class ReadinessDataCalculator(private val target: Project) {
         return computeReadiness(kmpReadinessData)
     }
 
-    internal fun MutableList<Reason>.addReadyReason(readyReasonType: ReadyReasonType, details: String? = null) {
+    private fun MutableList<Reason>.addReadyReason(readyReasonType: ReadyReasonType, details: String? = null) {
         this.add(
             Reason.ReadyReason(
                 type = readyReasonType,
@@ -70,7 +68,7 @@ internal class ReadinessDataCalculator(private val target: Project) {
         )
     }
 
-    internal fun MutableList<Reason>.addNotReadyReason(
+    private fun MutableList<Reason>.addNotReadyReason(
         notReadyReasonType: NotReadyReasonType,
         details: String? = null
     ) {
@@ -82,7 +80,7 @@ internal class ReadinessDataCalculator(private val target: Project) {
         )
     }
 
-    fun computeReadiness(readinessData: ReadinessData): ReadinessResult {
+    private fun computeReadiness(readinessData: ReadinessData): ReadinessResult {
         val reasons = mutableListOf<Reason>()
         readinessData.apply {
             if (dependencyAnalysis.hasOnlyMultiplatformCompatibleDependencies) {

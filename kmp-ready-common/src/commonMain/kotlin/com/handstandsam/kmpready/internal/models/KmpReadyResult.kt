@@ -1,13 +1,14 @@
-package com.handstandsam.kmpreadiness.internal.models
+package com.handstandsam.kmpready.internal.models
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonObject
 
-internal interface HasGav {
+public interface HasGav {
     val gav: Gav
 }
 
 @Serializable
-internal sealed class KmpReadyResult {
+public sealed class KmpReadyResult {
     @Serializable
 
     sealed class Allowed : HasGav, KmpReadyResult() {
@@ -16,6 +17,7 @@ internal sealed class KmpReadyResult {
         data class FromRemote(
             override val gav: Gav,
             val metadataUrl: String,
+            val kotlinToolingMetadataJson: JsonObject,
         ) : Allowed()
 
         @Serializable
