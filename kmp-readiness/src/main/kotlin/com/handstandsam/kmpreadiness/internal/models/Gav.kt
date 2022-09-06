@@ -3,12 +3,11 @@ package com.handstandsam.kmpreadiness.internal.models
 import kotlinx.serialization.Serializable
 
 @Serializable
-internal data class Gav(val group: String, val artifact: String, val version: String?) {
+internal data class Gav(val group: String, val artifact: String, val version: String) {
     val id: String = buildString {
-        append("$group:$artifact")
-        if (version != null) {
-            append(":$version")
-        }
+        append(group)
+        append(":$artifact")
+        append(":$version")
     }
 
     companion object {

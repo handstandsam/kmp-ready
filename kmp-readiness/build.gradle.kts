@@ -67,11 +67,12 @@ dependencies {
     implementation(libs.kotlin.gradle.plugin)
     implementation(libs.android.gradle.plugin)
 
-    implementation("com.jakewharton.picnic:picnic:0.6.0")
+    implementation(libs.picnic)
+    implementation(libs.kotlin.tooling.metadata)
 
     implementation(libs.okhttp)
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.3.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
+    implementation(libs.kotlinx.serialization.core)
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlin.coroutines)
     testImplementation(libs.kotlin.test.common)
     testImplementation(libs.truth)

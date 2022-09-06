@@ -11,9 +11,9 @@ internal class ReadinessRepo(tempDir: File) {
             createNewFile()
         }
     }
-    val notReadyCache = mutableListOf<Gav>().also { notReady ->
+    val notReadyCache = mutableListOf<ResultDataPair>().also { notReady ->
         notReadyCacheFile.readText().lines().map { gavString ->
-            Gav.fromString(gavString)?.let { notReady.add(it) }
+            Gav.fromString(gavString)?.let { notReady.add(ResultDataPair(it, KmpReadyResult.NotAllowed.FromCache(it))) }
         }
     }
 
@@ -22,9 +22,9 @@ internal class ReadinessRepo(tempDir: File) {
             createNewFile()
         }
     }
-    val readyCache = mutableListOf<Gav>().also { ready ->
+    val readyCache = mutableListOf<ResultDataPair>().also { ready ->
         readyCacheFile.readText().lines().map { gavString ->
-            Gav.fromString(gavString)?.let { ready.add(it) }
+            Gav.fromString(gavString)?.let { ready.add(ResultDataPair(it, KmpReadyResult.Allowed.FromCache(it))) }
         }
     }
 
@@ -32,7 +32,7 @@ internal class ReadinessRepo(tempDir: File) {
         readyCacheFile
             .writeText(
                 readyCache
-                    .map { it.id }
+                    .map { it.gav.id }
                     .sorted()
                     .distinct()
                     .joinToString("\n")
@@ -40,21 +40,27 @@ internal class ReadinessRepo(tempDir: File) {
         notReadyCacheFile
             .writeText(
                 notReadyCache
-                    .map { it.id }
+                    .map { it.gav.id }
                     .distinct()
                     .sorted()
                     .joinToString("\n"))
     }
 
-    fun add(kmpReadyResult: KmpReadyResult) {
-        if (kmpReadyResult.isReady) {
-            readyCache.add(kmpReadyResult.gav)
-        } else {
-            notReadyCache.add(kmpReadyResult.gav)
+    data class ResultDataPair(val gav: Gav, val kmpReadyResult: KmpReadyResult)
+
+    fun add(gav: Gav, kmpReadyResult: KmpReadyResult) {
+        when (kmpReadyResult) {
+            is KmpReadyResult.Allowed -> {
+                readyCache.add(ResultDataPair(gav, kmpReadyResult))
+            }
+
+            is KmpReadyResult.NotAllowed -> {
+                notReadyCache.add(ResultDataPair(gav, kmpReadyResult))
+            }
         }
     }
 
     fun hasBeenChecked(gav: Gav): Boolean {
-        return readyCache.any { it == gav } || notReadyCache.any { it == gav }
+        return readyCache.any { it.gav == gav } || notReadyCache.any { it.gav == gav }
     }
 }
