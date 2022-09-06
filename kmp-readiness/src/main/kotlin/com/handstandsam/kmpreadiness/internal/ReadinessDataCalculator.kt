@@ -92,7 +92,7 @@ internal class ReadinessDataCalculator(private val target: Project) {
                     NotReadyReasonType.IncompatibleDependencies,
                     buildString {
                         dependencyAnalysis.incompatible.forEach {
-                            appendLine("* $it")
+                            appendLine("* ${it.gav.id}")
                         }
                     }
                 )
