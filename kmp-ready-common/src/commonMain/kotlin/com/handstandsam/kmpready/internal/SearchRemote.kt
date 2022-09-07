@@ -5,14 +5,16 @@ import com.handstandsam.kmpready.internal.models.KotlinToolingMetadataResult
 import io.ktor.client.HttpClient
 import io.ktor.client.request.request
 import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsText
 import io.ktor.client.statement.readText
 import io.ktor.http.URLBuilder
 import io.ktor.http.Url
+import io.ktor.http.appendPathSegments
 import io.ktor.http.pathComponents
 import kotlinx.serialization.json.JsonObject
 
 internal class SearchRemote(
-    internal val httpClient: HttpClient = HttpClient(),
+    internal val httpClient: HttpClient,
 ) {
 
     internal companion object {
@@ -26,7 +28,7 @@ internal class SearchRemote(
                 pathSegments.add(gav.artifact)
                 pathSegments.add(gav.version)
                 pathSegments.add("${gav.artifact}-${gav.version}-kotlin-tooling-metadata.json")
-                pathComponents(pathSegments)
+                appendPathSegments(pathSegments)
             }.buildString()
         }
     }
@@ -34,9 +36,9 @@ internal class SearchRemote(
     internal suspend fun searchForInRepo(kotlinToolingMetadataUrlString: String, gav: Gav): KotlinToolingMetadataResult {
         println("Looking for kotlin-tooling-metadata.json: $kotlinToolingMetadataUrlString")
         try {
-            val httpResponse = httpClient.request<HttpResponse>(Url(kotlinToolingMetadataUrlString))
+            val httpResponse = httpClient.request(Url(kotlinToolingMetadataUrlString))
             if (httpResponse.status.value in 200..299) {
-                val jsonResponse = httpResponse.readText()
+                val jsonResponse = httpResponse.bodyAsText()
                 return KotlinToolingMetadataResult.Success(
                     url = kotlinToolingMetadataUrlString,
                     json = JsonSerializer.json.decodeFromString(JsonObject.serializer(), jsonResponse),

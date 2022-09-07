@@ -7,7 +7,7 @@ plugins {
 
 dependencies {
   implementation(libs.kotlin.stdlib)
-  api(libs.okhttp)
+  api(libs.picnic)
   implementation(libs.kotlinx.datetime)
   testImplementation(libs.kotlin.test.common)
   testImplementation(libs.truth)

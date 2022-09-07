@@ -4,9 +4,11 @@ import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.LibraryExtension
 import com.handstandsam.kmpreadiness.internal.deptraversal.ClasspathDependencyTraversal
 import com.handstandsam.kmpreadiness.internal.util.FileUtil
+import com.handstandsam.kmpready.internal.SearchRemote
 import com.handstandsam.kmpready.internal.models.NotReadyReasonType
 import com.handstandsam.kmpready.internal.models.ReadyReasonType
 import com.handstandsam.kmpready.internal.models.Reason
+import io.ktor.client.HttpClient
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.Project
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
@@ -42,7 +44,9 @@ internal class ReadinessDataCalculator(private val target: Project) {
                     mavenRepoUrls.add(url)
                 }
 
-            DependenciesReadinessProcessor(FileUtil.projectDirOutputFile(target)).process(
+            val searchRemote = SearchRemote(HttpClient())
+
+            DependenciesReadinessProcessor(FileUtil.projectDirOutputFile(target), searchRemote).process(
                 mavenRepoUrls,
                 computedDependencies
             )

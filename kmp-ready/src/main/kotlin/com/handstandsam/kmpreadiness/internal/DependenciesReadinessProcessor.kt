@@ -9,7 +9,7 @@ import java.io.File
 
 internal class DependenciesReadinessProcessor(
     private val tempDir: File,
-    private val searchRemote: SearchRemote = SearchRemote()
+    private val searchRemote: SearchRemote,
 ) {
 
     val excludedArtifacts = listOf(
