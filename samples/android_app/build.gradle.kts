@@ -18,7 +18,6 @@ dependencies {
     implementation(libs.kotlin.stdlib)
     implementation(project(":samples:android_lib"))
     implementation(project(":samples:jvm"))
-    implementation(project(":samples:jvm_kmp4free"))
     implementation(project(":samples:multiplatform"))
 }
 
