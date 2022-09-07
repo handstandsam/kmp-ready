@@ -6,6 +6,7 @@ android_target_sdk = "32"
 androidx_activity = "1.4.0"
 binary_compatibility_validator = "0.11.1"
 dependency_guard = "0.3.1"
+jetbrains_compose = "1.2.0-alpha01-dev774"
 junit4 = "4.13.2"
 junit_jupiter = "5.8.2"
 kotlin = "1.7.10"
@@ -34,12 +35,17 @@ kotlinx_datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 kotlinx_serialization_core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx_serialization" }
 kotlinx_serialization_json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx_serialization" }
 ktor_client_core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor_client_js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
 ktor_client_okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor_client_apache = { module = "io.ktor:ktor-client-apache", version.ref = "ktor" }
 picnic = { module = "com.jakewharton.picnic:picnic", version.ref = "picnic" }
 truth = { module = "com.google.truth:truth", version.ref = "truth" }
+jetbrains_compose_web_core = { module = "org.jetbrains.compose.web:web-core", version.ref = "jetbrains_compose" }
+jetbrains_compose_runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "jetbrains_compose" }
 
 [plugins]
+jetbrains_compose = { id = "org.jetbrains.compose", version.ref = "jetbrains_compose" }
+kotlinx_serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 dependency_guard = { id = "com.dropbox.dependency-guard", version.ref = "dependency_guard" }
 kotlin_jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "kotlin" }

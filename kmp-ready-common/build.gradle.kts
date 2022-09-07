@@ -1,14 +1,22 @@
-// https://youtrack.jetbrains.com/issue/KTIJ-19369
-@Suppress("DSL_SCOPE_VIOLATION")
+@Suppress("DSL_SCOPE_VIOLATION") // https://youtrack.jetbrains.com/issue/KTIJ-19369
 plugins {
     kotlin("multiplatform")
     alias(libs.plugins.dokka)
     alias(libs.plugins.mavenPublish)
-    kotlin("plugin.serialization") version "1.5.31"
+    alias(libs.plugins.kotlinx.serialization)
 }
 
 kotlin {
     jvm()
+
+    js(IR) {
+        browser {
+            testTask {
+                enabled = false
+            }
+            binaries.executable()
+        }
+    }
 
     sourceSets {
         val commonMain by getting {
@@ -35,6 +43,10 @@ kotlin {
                 implementation(libs.truth)
                 implementation(libs.kotlin.test.junit5)
             }
+        }
+
+        val jsMain by getting {
+            dependsOn(commonMain)
         }
     }
 }
