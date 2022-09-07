@@ -4,3 +4,67 @@ public final class com/handstandsam/kmpreadiness/KmpReadinessPlugin : org/gradle
 	public fun apply (Lorg/gradle/api/Project;)V
 }
 
+public final class com/handstandsam/kmpready/internal/JsonSerializer {
+	public static final field INSTANCE Lcom/handstandsam/kmpready/internal/JsonSerializer;
+	public final fun getJson ()Lkotlinx/serialization/json/Json;
+}
+
+public final class com/handstandsam/kmpready/internal/SearchRemote {
+	public static final field Companion Lcom/handstandsam/kmpready/internal/SearchRemote$Companion;
+	public fun <init> (Lio/ktor/client/HttpClient;)V
+	public final fun getHttpClient ()Lio/ktor/client/HttpClient;
+	public final fun searchForInRepo (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/handstandsam/kmpready/internal/SearchRemote$Companion {
+	public final fun getUrlForKotlinToolingMetadata (Ljava/lang/String;Lcom/handstandsam/kmpready/internal/models/Gav;)Ljava/lang/String;
+}
+
+public final class com/handstandsam/kmpready/internal/models/Gav {
+	public static final field Companion Lcom/handstandsam/kmpready/internal/models/Gav$Companion;
+	public synthetic fun <init> (ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/internal/SerializationConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/handstandsam/kmpready/internal/models/Gav;
+	public static synthetic fun copy$default (Lcom/handstandsam/kmpready/internal/models/Gav;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/handstandsam/kmpready/internal/models/Gav;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getArtifact ()Ljava/lang/String;
+	public final fun getGroup ()Ljava/lang/String;
+	public final fun getId ()Ljava/lang/String;
+	public final fun getVersion ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+	public static final fun write$Self (Lcom/handstandsam/kmpready/internal/models/Gav;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
+}
+
+public final class com/handstandsam/kmpready/internal/models/Gav$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/handstandsam/kmpready/internal/models/Gav$$serializer;
+	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/handstandsam/kmpready/internal/models/Gav;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/handstandsam/kmpready/internal/models/Gav;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/handstandsam/kmpready/internal/models/Gav$Companion {
+	public final fun fromString (Ljava/lang/String;)Lcom/handstandsam/kmpready/internal/models/Gav;
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public abstract class com/handstandsam/kmpready/internal/models/KotlinToolingMetadataResult {
+}
+
+public final class com/handstandsam/kmpready/internal/models/KotlinToolingMetadataResult$NotFound : com/handstandsam/kmpready/internal/models/KotlinToolingMetadataResult {
+	public fun <init> ()V
+}
+
+public final class com/handstandsam/kmpready/internal/models/KotlinToolingMetadataResult$Success : com/handstandsam/kmpready/internal/models/KotlinToolingMetadataResult {
+	public fun <init> (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)V
+	public final fun getJson ()Lkotlinx/serialization/json/JsonObject;
+	public final fun getUrl ()Ljava/lang/String;
+}
+

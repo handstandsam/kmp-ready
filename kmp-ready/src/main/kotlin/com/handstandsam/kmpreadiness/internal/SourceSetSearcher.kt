@@ -66,7 +66,7 @@ internal class SourceSetSearcher {
         return result
     }
 
-    fun walkSourceDirectorySet(sourceFiles: SourceDirectorySet, endsWith: String): List<Path> {
+    fun walkSourceDirectorySet(sourceFiles: SourceDirectorySet): List<Path> {
         val paths = mutableListOf<Path>()
         sourceFiles
             .forEach {
@@ -83,8 +83,8 @@ internal class SourceSetSearcher {
                 .filter { !it.name.toLowerCase().contains("test") }
                 .forEach { sourceSet ->
                     val matchingFiles = mutableListOf<Path>().apply {
-                        addAll(walkSourceDirectorySet(sourceSet.kotlin, ""))
-                        addAll(walkSourceDirectorySet(sourceSet.resources, ")"))
+                        addAll(walkSourceDirectorySet(sourceSet.kotlin))
+                        addAll(walkSourceDirectorySet(sourceSet.resources))
                     }
                     sourceSetToFiles["android-${sourceSet.name}"] = matchingFiles.map { it.toString() }
                 }
@@ -95,7 +95,7 @@ internal class SourceSetSearcher {
             sourceSets
                 .filter { !it.name.toLowerCase().contains("test") }
                 .forEach { sourceSet ->
-                    val matchingFiles = walkSourceDirectorySet(sourceSet.kotlin, "")
+                    val matchingFiles = walkSourceDirectorySet(sourceSet.kotlin)
                     sourceSetToFiles["kotlin-${sourceSet.name}"] = matchingFiles.map { it.toString() }
                 }
         }

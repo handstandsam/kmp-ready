@@ -13,12 +13,12 @@ import io.ktor.http.appendPathSegments
 import io.ktor.http.pathComponents
 import kotlinx.serialization.json.JsonObject
 
-internal class SearchRemote(
-    internal val httpClient: HttpClient,
+public class SearchRemote(
+    public val httpClient: HttpClient,
 ) {
 
-    internal companion object {
-        internal fun getUrlForKotlinToolingMetadata(mavenRepository: String, gav: Gav): String {
+    public companion object {
+        public fun getUrlForKotlinToolingMetadata(mavenRepository: String, gav: Gav): String {
             val url = Url(mavenRepository)
             return URLBuilder(url).apply {
                 val pathSegments = mutableListOf<String>()
@@ -33,7 +33,7 @@ internal class SearchRemote(
         }
     }
 
-    internal suspend fun searchForInRepo(kotlinToolingMetadataUrlString: String, gav: Gav): KotlinToolingMetadataResult {
+    public suspend fun searchForInRepo(kotlinToolingMetadataUrlString: String): KotlinToolingMetadataResult {
         println("Looking for kotlin-tooling-metadata.json: $kotlinToolingMetadataUrlString")
         try {
             val httpResponse = httpClient.request(Url(kotlinToolingMetadataUrlString))
